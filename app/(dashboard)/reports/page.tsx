@@ -40,9 +40,7 @@ export default function ReportsPage() {
     const [insights, setInsights] = useState<string[]>([]);
     const [defaultCurrency, setDefaultCurrency] = useState<'NGN' | 'USD'>('NGN');
 
-    useEffect(() => {
-        loadReportData();
-    }, [loadReportData]);
+
 
     const loadReportData = useCallback(async () => {
         try {
@@ -154,7 +152,11 @@ export default function ReportsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [supabase]);
+
+    useEffect(() => {
+        loadReportData();
+    }, [loadReportData]);
 
     const generateInsights = async () => {
         if (!reportData) return;
