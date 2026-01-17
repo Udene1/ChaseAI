@@ -42,7 +42,7 @@ export async function POST(
         // Generate AI reminder
         const reminderContent = await generateReminder(
             invoice as Invoice,
-            invoice.client as Client | null,
+            (invoice as any).client as Client | null,
             escalationLevel,
             {
                 aiProvider: settings?.aiProvider,
