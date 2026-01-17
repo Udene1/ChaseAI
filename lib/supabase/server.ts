@@ -52,7 +52,14 @@ export async function getUser() {
 /**
  * Get user profile from database
  */
-export async function getUserProfile() {
+import { User } from '@/types';
+
+// ... (existing helper function imports)
+
+/**
+ * Get user profile from database
+ */
+export async function getUserProfile(): Promise<User | null> {
     const user = await getUser();
     if (!user) return null;
 
