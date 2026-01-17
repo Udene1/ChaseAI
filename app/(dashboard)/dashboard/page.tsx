@@ -42,7 +42,8 @@ async function getDashboardData() {
     const { data: allInvoices } = await supabase
         .from('invoices')
         .select('amount, status, currency')
-        .eq('user_id', profile.id);
+        .eq('user_id', profile.id)
+        .returns<{ amount: number; status: string; currency: string }[]>();
 
     const stats = {
         totalInvoices: allInvoices?.length || 0,
