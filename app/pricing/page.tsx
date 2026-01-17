@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/client';
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-export default function PricingPage() {
+function PricingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const preselectedPlan = searchParams.get('plan');
@@ -203,5 +203,17 @@ export default function PricingPage() {
                 </div>
             </section>
         </div>
+    );
+}
+
+export default function PricingPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+            </div>
+        }>
+            <PricingContent />
+        </Suspense>
     );
 }
