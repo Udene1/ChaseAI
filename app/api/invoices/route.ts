@@ -30,7 +30,7 @@ export async function GET(request: Request) {
             query = query.eq('status', status);
         }
 
-        const { data, error } = await query;
+        const { data, error } = await (query as any);
 
         if (error) {
             console.error('Error fetching invoices:', error);
@@ -87,11 +87,10 @@ export async function POST(request: Request) {
             .single();
 
         if (existingClient) {
-            clientId = existingClient.id;
+            clientId = (existingClient as any).id;
         } else {
             // Create new client
-            const { data: newClient, error: clientError } = await supabase
-                .from('clients')
+            const { data: newClient, error: clientError } = await (supabase.from('clients') as any)
                 .insert({
                     user_id: user.id,
                     name: clientName,
@@ -107,12 +106,11 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: 'Failed to create client' }, { status: 500 });
             }
 
-            clientId = newClient.id;
+            clientId = (newClient as any).id;
         }
 
         // Create invoice
-        const { data: invoice, error: invoiceError } = await supabase
-            .from('invoices')
+        const { data: invoice, error: invoiceError } = await (supabase.from('invoices') as any)
             .insert({
                 user_id: user.id,
                 client_id: clientId,
@@ -137,8 +135,8 @@ export async function POST(request: Request) {
             const dueDateObj = new Date(dueDate);
 
             // Schedule Level 1 reminder for due date
-            await supabase.from('reminders').insert({
-                invoice_id: invoice.id,
+            await (supabase.from('reminders') as any).insert({
+                invoice_id: (invoice as any).id,
                 type: 'email',
                 escalation_level: 1,
                 scheduled_date: dueDateObj.toISOString(),
@@ -148,8 +146,8 @@ export async function POST(request: Request) {
             // Schedule Level 2 reminder for 7 days after due date
             const level2Date = new Date(dueDateObj);
             level2Date.setDate(level2Date.getDate() + 7);
-            await supabase.from('reminders').insert({
-                invoice_id: invoice.id,
+            await (supabase.from('reminders') as any).insert({
+                invoice_id: (invoice as any).id,
                 type: 'email',
                 escalation_level: 2,
                 scheduled_date: level2Date.toISOString(),
@@ -159,8 +157,8 @@ export async function POST(request: Request) {
             // Schedule Level 3 reminder for 14 days after due date
             const level3Date = new Date(dueDateObj);
             level3Date.setDate(level3Date.getDate() + 14);
-            await supabase.from('reminders').insert({
-                invoice_id: invoice.id,
+            await (supabase.from('reminders') as any).insert({
+                invoice_id: (invoice as any).id,
                 type: 'email',
                 escalation_level: 3,
                 scheduled_date: level3Date.toISOString(),

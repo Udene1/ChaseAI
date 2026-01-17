@@ -56,8 +56,9 @@ export default function ReportsPage() {
                 .single();
 
             if (profile) {
-                setUser(profile);
-                setDefaultCurrency((profile.default_currency as 'NGN' | 'USD') || 'NGN');
+                const typedProfile = profile as User;
+                setUser(typedProfile);
+                setDefaultCurrency((typedProfile.default_currency as 'NGN' | 'USD') || 'NGN');
             }
 
             // Fetch all invoices
@@ -128,10 +129,10 @@ export default function ReportsPage() {
             }));
 
             const statusCounts = {
-                draft: invoices.filter((i) => i.status === 'draft').length,
-                sent: invoices.filter((i) => i.status === 'sent').length,
-                overdue: invoices.filter((i) => i.status === 'overdue').length,
-                paid: invoices.filter((i) => i.status === 'paid').length,
+                draft: (invoices as Invoice[]).filter((i) => i.status === 'draft').length,
+                sent: (invoices as Invoice[]).filter((i) => i.status === 'sent').length,
+                overdue: (invoices as Invoice[]).filter((i) => i.status === 'overdue').length,
+                paid: (invoices as Invoice[]).filter((i) => i.status === 'paid').length,
             };
 
             const statusData = [

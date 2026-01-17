@@ -25,17 +25,16 @@ export async function POST(request: Request) {
             .lt('due_date', now.toISOString().split('T')[0]);
 
         if (overdueInvoices && overdueInvoices.length > 0) {
-            await supabase
-                .from('invoices')
+            await (supabase.from('invoices') as any)
                 .update({ status: 'overdue' })
-                .in('id', overdueInvoices.map((i) => i.id));
+                .in('id', (overdueInvoices as any[]).map((i) => i.id));
 
             console.log(`Marked ${overdueInvoices.length} invoices as overdue`);
         }
 
         // 2. Get pending reminders that are due
-        const { data: pendingReminders } = await supabase
-            .from('reminders')
+        const { data: pendingReminders } = await (supabase
+            .from('reminders') as any)
             .select(`
         *,
         invoice:invoices(
@@ -57,30 +56,28 @@ export async function POST(request: Request) {
         }
 
         // 3. Process each reminder
-        for (const reminder of pendingReminders) {
+        for (const reminder of (pendingReminders as any[])) {
             results.processed++;
 
-            const invoice = reminder.invoice as Invoice & {
+            const invoice = (reminder as any).invoice as Invoice & {
                 client: Client | null;
                 user: { settings: UserSettings } | null;
             };
 
             // Skip if invoice is already paid
             if (invoice.status === 'paid') {
-                await supabase
-                    .from('reminders')
+                await (supabase.from('reminders') as any)
                     .update({ status: 'cancelled' })
-                    .eq('id', reminder.id);
+                    .eq('id', (reminder as any).id);
                 results.skipped++;
                 continue;
             }
 
             // Skip if no client
             if (!invoice.client) {
-                await supabase
-                    .from('reminders')
+                await (supabase.from('reminders') as any)
                     .update({ status: 'failed', error_message: 'No client found' })
-                    .eq('id', reminder.id);
+                    .eq('id', (reminder as any).id);
                 results.failed++;
                 continue;
             }
@@ -90,7 +87,7 @@ export async function POST(request: Request) {
             try {
                 // Get email template
                 const template = getEmailTemplate(
-                    reminder.escalation_level as EscalationLevel,
+                    (reminder as any).escalation_level as EscalationLevel,
                     invoice,
                     invoice.client,
                     undefined,
@@ -109,33 +106,30 @@ export async function POST(request: Request) {
                 );
 
                 if (result.success) {
-                    await supabase
-                        .from('reminders')
+                    await (supabase.from('reminders') as any)
                         .update({
                             status: 'sent',
                             sent_date: now.toISOString(),
                         })
-                        .eq('id', reminder.id);
+                        .eq('id', (reminder as any).id);
                     results.sent++;
                 } else {
-                    await supabase
-                        .from('reminders')
+                    await (supabase.from('reminders') as any)
                         .update({
                             status: 'failed',
                             error_message: result.error,
                         })
-                        .eq('id', reminder.id);
+                        .eq('id', (reminder as any).id);
                     results.failed++;
                 }
             } catch (error) {
                 console.error(`Failed to send reminder ${reminder.id}:`, error);
-                await supabase
-                    .from('reminders')
+                await (supabase.from('reminders') as any)
                     .update({
                         status: 'failed',
                         error_message: error instanceof Error ? error.message : 'Unknown error',
                     })
-                    .eq('id', reminder.id);
+                    .eq('id', (reminder as any).id);
                 results.failed++;
             }
         }

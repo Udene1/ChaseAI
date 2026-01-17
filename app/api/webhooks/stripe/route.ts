@@ -40,8 +40,7 @@ export async function POST(request: Request) {
                 // Update user subscription
                 const subscriptionType = plan === 'lifetime' ? 'lifetime' : 'monthly';
 
-                const { error } = await supabase
-                    .from('users')
+                const { error } = await (supabase.from('users') as any)
                     .update({
                         subscription_type: subscriptionType,
                         stripe_customer_id: customerId,
@@ -62,8 +61,7 @@ export async function POST(request: Request) {
                 if (!customerId) break;
 
                 // Downgrade to free
-                const { error } = await supabase
-                    .from('users')
+                const { error } = await (supabase.from('users') as any)
                     .update({ subscription_type: 'free' })
                     .eq('stripe_customer_id', customerId);
 

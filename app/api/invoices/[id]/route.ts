@@ -15,8 +15,8 @@ export async function GET(
 
         const supabase = createClient();
 
-        const { data, error } = await supabase
-            .from('invoices')
+        const { data, error } = await (supabase
+            .from('invoices') as any)
             .select(`
         *,
         client:clients(*),
@@ -54,8 +54,8 @@ export async function PUT(
         const supabase = createClient();
 
         // Verify ownership
-        const { data: existingInvoice } = await supabase
-            .from('invoices')
+        const { data: existingInvoice } = await (supabase
+            .from('invoices') as any)
             .select('id, status')
             .eq('id', params.id)
             .eq('user_id', user.id)
@@ -75,8 +75,8 @@ export async function PUT(
         if (dueDate) updateData.due_date = dueDate;
         if (description !== undefined) updateData.description = description;
 
-        const { data, error } = await supabase
-            .from('invoices')
+        const { data, error } = await (supabase
+            .from('invoices') as any)
             .update(updateData)
             .eq('id', params.id)
             .select('*')
@@ -89,17 +89,17 @@ export async function PUT(
 
         // If status changed to 'sent' from 'draft', schedule reminders
         if (status === 'sent' && existingInvoice.status === 'draft') {
-            const { data: invoice } = await supabase
-                .from('invoices')
+            const { data: invoice } = await (supabase
+                .from('invoices') as any)
                 .select('due_date')
                 .eq('id', params.id)
                 .single();
 
             if (invoice) {
-                const dueDateObj = new Date(invoice.due_date);
+                const dueDateObj = new Date((invoice as any).due_date);
 
                 // Schedule reminders
-                await supabase.from('reminders').insert([
+                await (supabase.from('reminders') as any).insert([
                     {
                         invoice_id: params.id,
                         type: 'email',
@@ -127,8 +127,7 @@ export async function PUT(
 
         // If marked as paid, cancel pending reminders
         if (status === 'paid') {
-            await supabase
-                .from('reminders')
+            await (supabase.from('reminders') as any)
                 .update({ status: 'cancelled' })
                 .eq('invoice_id', params.id)
                 .eq('status', 'pending');

@@ -46,7 +46,7 @@ export async function POST(
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
         }
 
-        const client = invoice.client as Client | null;
+        const client = (invoice as any).client as Client | null;
 
         if (!client) {
             return NextResponse.json({ error: 'No client associated with invoice' }, { status: 400 });
@@ -57,8 +57,7 @@ export async function POST(
         const settings = (profile?.settings || {}) as UserSettings;
 
         // Create reminder record
-        const { data: reminder, error: reminderError } = await supabase
-            .from('reminders')
+        const { data: reminder, error: reminderError } = await (supabase.from('reminders') as any)
             .insert({
                 invoice_id: params.id,
                 type,
@@ -138,14 +137,13 @@ export async function POST(
 
             // Update reminder status
             if (sendResult.success) {
-                await supabase
-                    .from('reminders')
+                await (supabase.from('reminders') as any)
                     .update({
                         status: 'sent',
                         sent_date: new Date().toISOString(),
                         ai_message: aiMessage,
                     })
-                    .eq('id', reminder.id);
+                    .eq('id', (reminder as any).id);
 
                 // Add to client history
                 const historyNotes = (client.history_notes as Array<Record<string, unknown>>) || [];
@@ -156,27 +154,24 @@ export async function POST(
                     invoiceId: params.id,
                 });
 
-                await supabase
-                    .from('clients')
+                await (supabase.from('clients') as any)
                     .update({ history_notes: historyNotes })
                     .eq('id', client.id);
 
                 // Update invoice status to overdue if past due date
-                const dueDate = new Date(invoice.due_date);
-                if (dueDate < new Date() && invoice.status === 'sent') {
-                    await supabase
-                        .from('invoices')
+                const dueDate = new Date((invoice as any).due_date);
+                if (dueDate < new Date() && (invoice as any).status === 'sent') {
+                    await (supabase.from('invoices') as any)
                         .update({ status: 'overdue' })
                         .eq('id', params.id);
                 }
             } else {
-                await supabase
-                    .from('reminders')
+                await (supabase.from('reminders') as any)
                     .update({
                         status: 'failed',
                         error_message: sendResult.error,
                     })
-                    .eq('id', reminder.id);
+                    .eq('id', (reminder as any).id);
 
                 return NextResponse.json({ error: sendResult.error || 'Failed to send' }, { status: 500 });
             }
@@ -187,13 +182,12 @@ export async function POST(
             });
         } catch (error) {
             // Update reminder as failed
-            await supabase
-                .from('reminders')
+            await (supabase.from('reminders') as any)
                 .update({
                     status: 'failed',
                     error_message: error instanceof Error ? error.message : 'Unknown error',
                 })
-                .eq('id', reminder.id);
+                .eq('id', (reminder as any).id);
 
             throw error;
         }

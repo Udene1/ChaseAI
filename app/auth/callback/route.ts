@@ -24,11 +24,15 @@ export async function GET(request: Request) {
 
                 if (!profile) {
                     // Create user profile
-                    await supabase.from('users').insert({
+                    const { error: insertError } = await supabase.from('users').insert({
                         id: user.id,
                         email: user.email!,
-                        full_name: user.user_metadata?.full_name || user.user_metadata?.name || null,
-                    });
+                        full_name: user.user_metadata?.full_name || user.user_metadata?.name || (null as any),
+                    } as any);
+
+                    if (insertError) {
+                        console.error('Error creating user profile:', insertError);
+                    }
                 }
             }
 

@@ -53,10 +53,11 @@ export default function SettingsPage() {
                 .single();
 
             if (profile) {
-                setUser(profile);
+                const typedProfile = profile as User;
+                setUser(typedProfile);
                 setSettings({
                     ...settings,
-                    ...(profile.settings as UserSettings),
+                    ...(typedProfile.settings as UserSettings),
                 });
             }
         } catch (error) {
@@ -71,10 +72,9 @@ export default function SettingsPage() {
 
         setIsSaving(true);
         try {
-            const { error } = await supabase
-                .from('users')
+            const { error } = await (supabase.from('users') as any)
                 .update({
-                    settings,
+                    settings: settings as any,
                     default_currency: settings.defaultCurrency || 'NGN',
                 })
                 .eq('id', user.id);
