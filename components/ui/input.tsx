@@ -11,7 +11,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
     ({ className, label, error, helper, leftIcon, rightIcon, type, id, ...props }, ref) => {
-        const inputId = id || React.useId();
+        const generatedId = React.useId();
+        const inputId = id || generatedId;
 
         return (
             <div className="w-full">
@@ -63,7 +64,8 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     ({ className, label, error, helper, id, ...props }, ref) => {
-        const textareaId = id || React.useId();
+        const generatedId = React.useId();
+        const textareaId = id || generatedId;
 
         return (
             <div className="w-full">
@@ -101,7 +103,8 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     ({ className, label, error, helper, options, id, ...props }, ref) => {
-        const selectId = id || React.useId();
+        const generatedId = React.useId();
+        const selectId = id || generatedId;
 
         return (
             <div className="w-full">

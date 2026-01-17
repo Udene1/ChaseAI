@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Header } from '@/components/layout/header';
@@ -34,11 +34,7 @@ export default function SettingsPage() {
         preferWhatsApp: false,
     });
 
-    useEffect(() => {
-        loadUserSettings();
-    }, []);
-
-    const loadUserSettings = async () => {
+    const loadUserSettings = useCallback(async () => {
         try {
             const { data: { user: authUser } } = await supabase.auth.getUser();
             if (!authUser) {
@@ -65,7 +61,11 @@ export default function SettingsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [supabase, router, settings]);
+
+    useEffect(() => {
+        loadUserSettings();
+    }, [loadUserSettings]);
 
     const saveSettings = async () => {
         if (!user) return;

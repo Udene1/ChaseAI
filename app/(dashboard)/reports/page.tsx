@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/layout/header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -42,9 +42,9 @@ export default function ReportsPage() {
 
     useEffect(() => {
         loadReportData();
-    }, []);
+    }, [loadReportData]);
 
-    const loadReportData = async () => {
+    const loadReportData = useCallback(async () => {
         try {
             const { data: { user: authUser } } = await supabase.auth.getUser();
             if (!authUser) return;
