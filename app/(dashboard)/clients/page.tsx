@@ -16,10 +16,12 @@ async function getClients() {
         return { clients: [], profile: null };
     }
 
+    const userId = profile.id;
+
     const { data: clients } = await supabase
         .from('clients')
         .select('*')
-        .eq('user_id', profile.id)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
     return { clients: (clients || []) as Client[], profile };
