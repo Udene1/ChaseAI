@@ -70,7 +70,7 @@ export default async function InvoicesPage({
                 user={profile}
             />
 
-            <div className="p-6">
+            <div className="p-4 md:p-6">
                 {/* Header Actions */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6">
                     {/* Filters */}
@@ -80,8 +80,8 @@ export default async function InvoicesPage({
                                 key={filter.value}
                                 href={`/invoices${filter.value !== 'all' ? `?status=${filter.value}` : ''}`}
                                 className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${currentStatus === filter.value
-                                        ? 'bg-primary-100 text-primary-700'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    ? 'bg-primary-100 text-primary-700'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
                             >
                                 {filter.label}

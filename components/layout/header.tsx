@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Bell, Search, User, ChevronDown } from 'lucide-react';
+import { Bell, Search, User, ChevronDown, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { User as UserType } from '@/types';
+import { useMobileNav } from '@/lib/context/mobile-nav';
 
 interface HeaderProps {
     title: string;
@@ -13,13 +14,22 @@ interface HeaderProps {
 
 export function Header({ title, subtitle, user }: HeaderProps) {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const { toggle } = useMobileNav();
 
     return (
-        <header className="h-16 bg-white border-b border-gray-100 px-6 flex items-center justify-between sticky top-0 z-30">
-            {/* Left side - Title */}
-            <div>
-                <h1 className="text-xl font-semibold text-dark-900">{title}</h1>
-                {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+        <header className="h-16 bg-white border-b border-gray-100 px-4 md:px-6 flex items-center justify-between sticky top-0 z-30">
+            {/* Left side - Menu toggle & Title */}
+            <div className="flex items-center gap-3">
+                <button
+                    onClick={toggle}
+                    className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg md:hidden"
+                >
+                    <Menu className="w-6 h-6" />
+                </button>
+                <div>
+                    <h1 className="text-lg md:text-xl font-semibold text-dark-900 leading-tight">{title}</h1>
+                    {subtitle && <p className="text-xs md:text-sm text-gray-500 line-clamp-1">{subtitle}</p>}
+                </div>
             </div>
 
             {/* Right side - Actions */}

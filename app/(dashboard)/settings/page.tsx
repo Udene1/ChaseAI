@@ -112,7 +112,7 @@ export default function SettingsPage() {
         return (
             <>
                 <Header title="Settings" subtitle="Manage your account and integrations" />
-                <div className="p-6 flex items-center justify-center min-h-[400px]">
+                <div className="p-4 md:p-6 flex items-center justify-center min-h-[400px]">
                     <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
                 </div>
             </>
@@ -123,7 +123,7 @@ export default function SettingsPage() {
         <>
             <Header title="Settings" subtitle="Manage your account and integrations" user={user} />
 
-            <div className="p-6 max-w-4xl mx-auto space-y-6">
+            <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-6">
                 {/* Subscription Status */}
                 <Card>
                     <CardHeader>

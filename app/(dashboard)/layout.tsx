@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
-import { getUser, getUserProfile } from '@/lib/supabase/server';
+import { getUser } from '@/lib/supabase/server';
 import { Sidebar } from '@/components/layout/sidebar';
+import { MobileNavProvider } from '@/lib/context/mobile-nav';
 
 export default async function DashboardLayout({
     children,
@@ -14,11 +15,13 @@ export default async function DashboardLayout({
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Sidebar />
-            <main className="pl-64">
-                {children}
-            </main>
-        </div>
+        <MobileNavProvider>
+            <div className="min-h-screen bg-gray-50 flex">
+                <Sidebar />
+                <main className="flex-1 md:pl-64 transition-all duration-300">
+                    {children}
+                </main>
+            </div>
+        </MobileNavProvider>
     );
 }
