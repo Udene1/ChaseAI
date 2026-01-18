@@ -103,7 +103,7 @@ export default function ReportsPage() {
                     const updated = new Date(inv.updated_at);
                     const days = Math.max(0.5, (updated.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
                     totalDaysToPayment += days;
-                } else if (inv.status === 'overdue') {
+                } else if (inv.status === 'overdue' || inv.status === 'sent') {
                     totalOverdue += amount;
                 }
 

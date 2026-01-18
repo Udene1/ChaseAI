@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { getUser } from '@/lib/supabase/server';
+import { createClient, getUser, getUserProfile } from '@/lib/supabase/server';
+import { getInitialInvoiceEmail } from '@/lib/templates';
+import { sendEmail } from '@/lib/email';
+import { UserSettings } from '@/types';
 
 // GET /api/invoices - List user's invoices
 export async function GET(request: Request) {
@@ -130,9 +132,33 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Failed to create invoice' }, { status: 500 });
         }
 
-        // If status is 'sent', schedule reminders
+        // If status is 'sent', send initial invoice email and schedule reminders
         if (status === 'sent') {
             const dueDateObj = new Date(dueDate);
+
+            // Get user profile for business name and reply-to
+            const profile = await getUserProfile();
+            const settings = (profile?.settings || {}) as UserSettings;
+
+            // Send initial email
+            try {
+                const template = getInitialInvoiceEmail(
+                    invoice as any,
+                    { name: clientName, email: clientEmail } as any,
+                    settings.businessName
+                );
+
+                await sendEmail({
+                    to: clientEmail,
+                    subject: template.subject,
+                    html: template.html,
+                    text: template.text,
+                    replyTo: settings.replyToEmail,
+                });
+            } catch (emailError) {
+                console.error('Error sending initial invoice email:', emailError);
+                // We don't fail the whole request if email fails, as the invoice is created
+            }
 
             // Schedule Level 1 reminder for due date
             await (supabase.from('reminders') as any).insert({

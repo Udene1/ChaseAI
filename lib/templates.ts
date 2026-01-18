@@ -235,6 +235,62 @@ export function getUrgentReminderEmail(
 }
 
 /**
+ * Generate initial invoice email (The very first send)
+ */
+export function getInitialInvoiceEmail(
+  invoice: Invoice,
+  client: Client | null,
+  businessName?: string
+): EmailTemplate {
+  const clientName = client?.name || 'Valued Client';
+  const amount = formatCurrency(invoice.amount, invoice.currency as 'NGN' | 'USD');
+  const dueDate = formatDate(invoice.due_date);
+
+  const content = `
+    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+      Dear ${clientName},
+    </p>
+    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+      ${businessName ? `<strong>${businessName}</strong> has` : 'A new invoice has been'} generated for you. Please find the details below:
+    </p>
+    <div style="background-color: #f8fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin: 20px 0;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Invoice Number:</td>
+          <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 600; text-align: right;">${invoice.invoice_number}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Amount:</td>
+          <td style="padding: 8px 0; color: #3b82f6; font-size: 18px; font-weight: 700; text-align: right;">${amount}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Due Date:</td>
+          <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 600; text-align: right;">${dueDate}</td>
+        </tr>
+      </table>
+    </div>
+    <p style="margin: 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+      ${invoice.description ? `<strong>Description:</strong> ${invoice.description}<br><br>` : ''}
+      Please process the payment by the due date mentioned above. 
+      ${invoice.pdf_url ? `You can view or download the full invoice PDF here: <a href="${invoice.pdf_url}" style="color: #3b82f6; text-decoration: underline;">View Invoice</a>` : ''}
+    </p>
+    <p style="margin: 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+      If you have any questions or require any clarification, please feel free to reach out.
+    </p>
+    <p style="margin: 30px 0 0 0; color: #374151; font-size: 16px;">
+      Best regards,<br>
+      ${businessName || 'ChaseAI team'}
+    </p>
+  `;
+
+  return {
+    subject: `New Invoice from ${businessName || 'ChaseAI'}: ${invoice.invoice_number}`,
+    html: emailWrapper(content, '#3b82f6', businessName),
+    text: `Dear ${clientName},\n\nA new invoice (${invoice.invoice_number}) for ${amount} has been generated for you, due on ${dueDate}.\n\nBest regards,\n${businessName || 'ChaseAI team'}`,
+  };
+}
+
+/**
  * Get email template by escalation level
  */
 export function getEmailTemplate(

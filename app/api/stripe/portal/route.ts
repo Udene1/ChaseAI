@@ -15,7 +15,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'No subscription found' }, { status: 404 });
         }
 
-        const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const origin = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'https://chase-ai.vercel.app';
 
         const { url } = await createPortalSession(
             profile.stripe_customer_id,
