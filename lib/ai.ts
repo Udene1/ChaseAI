@@ -1,4 +1,5 @@
 import Groq from 'groq-sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import OpenAI from 'openai';
 import { Invoice, Client, EscalationLevel, AIReminderResponse, ClientHistoryNote } from '@/types';
 import { formatCurrency, formatDate } from './utils';
@@ -6,7 +7,7 @@ import { formatCurrency, formatDate } from './utils';
 /**
  * Get AI client based on provider preference
  */
-function getAIClient(settings?: { aiProvider?: string; groqApiKey?: string; openaiApiKey?: string; xaiApiKey?: string }) {
+function getAIClient(settings?: { aiProvider?: string; groqApiKey?: string; openaiApiKey?: string; xaiApiKey?: string; geminiApiKey?: string }) {
     let provider = settings?.aiProvider || process.env.AI_PROVIDER || 'groq';
     const groqKey = (settings?.groqApiKey && settings.groqApiKey.length > 0) ? settings.groqApiKey : process.env.GROQ_API_KEY;
     const xaiKey = (settings?.xaiApiKey && settings.xaiApiKey.length > 0) ? settings.xaiApiKey : process.env.XAI_API_KEY;
@@ -32,6 +33,14 @@ function getAIClient(settings?: { aiProvider?: string; groqApiKey?: string; open
                 apiKey: xaiKey || groqKey, // Fallback to groqKey if auto-detected
                 baseURL: 'https://api.x.ai/v1',
             }),
+        };
+    }
+
+    if (provider === 'gemini') {
+        const geminiKey = settings?.geminiApiKey || process.env.GEMINI_API_KEY;
+        return {
+            provider: 'gemini' as const,
+            client: new GoogleGenerativeAI(geminiKey || ''),
         };
     }
 
@@ -100,7 +109,7 @@ export async function generateReminder(
     invoice: Invoice,
     client: Client | null,
     escalationLevel: EscalationLevel,
-    settings?: { aiProvider?: string; groqApiKey?: string; openaiApiKey?: string; xaiApiKey?: string }
+    settings?: { aiProvider?: string; groqApiKey?: string; openaiApiKey?: string; xaiApiKey?: string; geminiApiKey?: string }
 ): Promise<AIReminderResponse> {
     const { provider, client: aiClient } = getAIClient(settings);
     const context = getEscalationContext(escalationLevel);
@@ -150,6 +159,13 @@ Respond in JSON format:
                 max_tokens: 500,
             });
             response = completion.choices[0]?.message?.content || '';
+        } else if (provider === 'gemini') {
+            const model = (aiClient as GoogleGenerativeAI).getGenerativeModel({ model: 'gemini-1.5-flash' });
+            const result = await model.generateContent(prompt + "\n\nRespond with ONLY valid JSON.");
+            response = result.response.text();
+
+            // Clean markdown code blocks if present
+            response = response.replace(/^```json\n|\n```$/g, '').trim();
         } else if (provider === 'xai') {
             const completion = await (aiClient as OpenAI).chat.completions.create({
                 model: 'grok-2-latest',
@@ -265,7 +281,7 @@ export async function generateInsights(
         avgDaysToPayment: number;
         clientData: Array<{ name: string; onTimeRate: number; totalInvoices: number }>;
     },
-    settings?: { aiProvider?: string; groqApiKey?: string; openaiApiKey?: string; xaiApiKey?: string }
+    settings?: { aiProvider?: string; groqApiKey?: string; openaiApiKey?: string; xaiApiKey?: string; geminiApiKey?: string }
 ): Promise<string[]> {
     const { provider, client: aiClient } = getAIClient(settings);
 
@@ -298,6 +314,13 @@ Example format: ["Insight 1", "Insight 2", "Insight 3"]`;
                 max_tokens: 300,
             });
             response = completion.choices[0]?.message?.content || '[]';
+        } else if (provider === 'gemini') {
+            const model = (aiClient as GoogleGenerativeAI).getGenerativeModel({ model: 'gemini-1.5-flash' });
+            const result = await model.generateContent(prompt + "\n\nRespond with ONLY valid JSON array.");
+            response = result.response.text();
+
+            // Clean markdown code blocks
+            response = response.replace(/^```json\n|\n```$/g, '').trim();
         } else if (provider === 'xai') {
             const completion = await (aiClient as OpenAI).chat.completions.create({
                 model: 'grok-2-latest',

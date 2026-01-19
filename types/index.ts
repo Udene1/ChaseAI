@@ -48,13 +48,14 @@ export interface ClientHistoryNote {
 export interface UserSettings {
     groqApiKey?: string;
     openaiApiKey?: string;
+    geminiApiKey?: string;
     twilioAccountSid?: string;
     twilioAuthToken?: string;
     twilioPhoneNumber?: string;
     businessName?: string;
     replyToEmail?: string;
     preferWhatsApp?: boolean;
-    aiProvider?: 'groq' | 'openai' | 'xai';
+    aiProvider?: 'groq' | 'openai' | 'xai' | 'gemini';
     defaultCurrency?: Currency;
     xaiApiKey?: string;
 }

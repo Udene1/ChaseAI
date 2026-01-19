@@ -220,6 +220,7 @@ export default function SettingsPage() {
                             options={[
                                 { value: 'groq', label: 'Groq (Recommended - Fast & Free)' },
                                 { value: 'xai', label: 'xAI (Grok - Versatile)' },
+                                { value: 'gemini', label: 'Google Gemini (Flash 1.5 - Fast)' },
                                 { value: 'openai', label: 'OpenAI (GPT-4)' },
                             ]}
                         />
@@ -241,6 +242,16 @@ export default function SettingsPage() {
                                 onChange={(e) => updateSetting('xaiApiKey', e.target.value)}
                                 placeholder="xai-..."
                                 helper="Get your API key from console.x.ai"
+                                leftIcon={<Key className="w-5 h-5" />}
+                            />
+                        ) : settings.aiProvider === 'gemini' ? (
+                            <Input
+                                label="Gemini API Key"
+                                type="password"
+                                value={settings.geminiApiKey || ''}
+                                onChange={(e) => updateSetting('geminiApiKey', e.target.value)}
+                                placeholder="AIza..."
+                                helper="Get your API key from aistudio.google.com/app/apikey"
                                 leftIcon={<Key className="w-5 h-5" />}
                             />
                         ) : (
