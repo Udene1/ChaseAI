@@ -47,8 +47,14 @@ function getAIClient(settings?: { aiProvider?: string; groqApiKey?: string; open
         };
     }
 
-}),
-};
+    console.log('[AI Debug] Falling back to Groq. Key present:', !!groqKey);
+
+    return {
+        provider: 'groq' as const,
+        client: new Groq({
+            apiKey: groqKey,
+        }),
+    };
 }
 
 /**
