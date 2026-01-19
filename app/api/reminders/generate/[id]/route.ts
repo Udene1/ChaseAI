@@ -39,6 +39,8 @@ export async function POST(
         const profile = await getUserProfile();
         const settings = profile?.settings as Record<string, string> | undefined;
 
+        console.log('[API Debug] User Settings from DB:', JSON.stringify(settings, null, 2));
+
         // Generate AI reminder
         const reminderContent = await generateReminder(
             invoice as Invoice,
