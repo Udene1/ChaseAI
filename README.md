@@ -1,4 +1,5 @@
-# ChaseAI - AI-Powered Invoice Chaser
+# ChaseAI - AI-Powered Invoice Management
+ - AI-Powered Invoice Chaser
 
 An AI-powered invoice reminder SaaS for freelancers and small businesses. Automate late payment reminders with intelligent, personalized messages that get you paid faster.
 
