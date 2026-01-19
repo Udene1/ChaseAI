@@ -51,17 +51,17 @@ export default function SettingsPage() {
             if (profile) {
                 const typedProfile = profile as User;
                 setUser(typedProfile);
-                setSettings({
-                    ...settings,
+                setSettings(prev => ({
+                    ...prev,
                     ...(typedProfile.settings as UserSettings),
-                });
+                }));
             }
         } catch (error) {
             console.error('Error loading settings:', error);
         } finally {
             setIsLoading(false);
         }
-    }, [supabase, router, settings]);
+    }, [supabase, router]);
 
     useEffect(() => {
         loadUserSettings();
