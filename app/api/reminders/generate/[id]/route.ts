@@ -48,6 +48,7 @@ export async function POST(
                 aiProvider: settings?.aiProvider,
                 groqApiKey: settings?.groqApiKey,
                 openaiApiKey: settings?.openaiApiKey,
+                geminiApiKey: settings?.geminiApiKey,
             }
         );
 

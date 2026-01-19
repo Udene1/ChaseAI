@@ -28,6 +28,7 @@ export async function POST(request: Request) {
                 aiProvider: settings.aiProvider,
                 groqApiKey: settings.groqApiKey,
                 openaiApiKey: settings.openaiApiKey,
+                geminiApiKey: settings.geminiApiKey,
             }
         );
 
