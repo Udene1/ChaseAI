@@ -219,7 +219,7 @@ export function Header({ title, subtitle, user }: HeaderProps) {
 
                                 <div className="px-4 py-2 border-t border-gray-100 bg-gray-50/50 rounded-b-xl text-center">
                                     <p className="text-[10px] text-gray-400">
-                                        You'll get notified here about sent reminders and invoices.
+                                        You&apos;ll get notified here about sent reminders and invoices.
                                     </p>
                                 </div>
                             </div>
