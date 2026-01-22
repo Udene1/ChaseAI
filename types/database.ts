@@ -160,6 +160,41 @@ export interface Database {
                     created_at?: string;
                 };
             };
+            notifications: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    title: string;
+                    message: string;
+                    type: 'info' | 'success' | 'warning' | 'error';
+                    is_read: boolean;
+                    link: string | null;
+                    created_at: string;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    title: string;
+                    message: string;
+                    type?: 'info' | 'success' | 'warning' | 'error';
+                    is_read?: boolean;
+                    link?: string | null;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+                Update: {
+                    id?: string;
+                    user_id?: string;
+                    title?: string;
+                    message?: string;
+                    type?: 'info' | 'success' | 'warning' | 'error';
+                    is_read?: boolean;
+                    link?: string | null;
+                    created_at?: string;
+                    updated_at?: string;
+                };
+            };
         };
         Views: {};
         Functions: {};

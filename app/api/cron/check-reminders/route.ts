@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { sendEmail } from '@/lib/email';
 import { getEmailTemplate } from '@/lib/templates';
 import { Invoice, Client, EscalationLevel, UserSettings } from '@/types';
+import { createNotification } from '@/lib/notifications';
 
 // POST /api/cron/check-reminders - Daily cron job to check and send reminders
 export async function POST(request: Request) {
@@ -30,6 +31,27 @@ export async function POST(request: Request) {
                 .in('id', (overdueInvoices as any[]).map((i) => i.id));
 
             console.log(`Marked ${overdueInvoices.length} invoices as overdue`);
+
+            // Notifications for overdue invoices
+            for (const inv of (overdueInvoices as any[])) {
+                // We need the user_id for the notification
+                const { data: fullInvoice }: any = await supabase
+                    .from('invoices')
+                    .select('user_id, invoice_number')
+                    .eq('id', inv.id)
+                    .single();
+
+                if (fullInvoice) {
+                    await createNotification({
+                        userId: fullInvoice.user_id,
+                        title: 'Invoice Overdue',
+                        message: `Invoice ${fullInvoice.invoice_number} is now overdue.`,
+                        type: 'warning',
+                        link: `/invoices/${inv.id}`,
+                        supabaseClient: supabase
+                    });
+                }
+            }
         }
 
         // 2. Get pending reminders that are due
@@ -113,6 +135,16 @@ export async function POST(request: Request) {
                         })
                         .eq('id', (reminder as any).id);
                     results.sent++;
+
+                    // Create notification
+                    await createNotification({
+                        userId: invoice.user_id,
+                        title: 'Scheduled Reminder Sent',
+                        message: `Automatic level ${(reminder as any).escalation_level} reminder for invoice ${invoice.invoice_number} sent to ${invoice.client.name}.`,
+                        type: 'success',
+                        link: `/invoices/${invoice.id}`,
+                        supabaseClient: supabase
+                    });
                 } else {
                     await (supabase.from('reminders') as any)
                         .update({

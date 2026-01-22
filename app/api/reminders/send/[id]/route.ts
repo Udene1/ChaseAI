@@ -5,6 +5,7 @@ import { generateReminder } from '@/lib/ai';
 import { getEmailTemplate, getSMSTemplate, getWhatsAppTemplate } from '@/lib/templates';
 import { sendEmail } from '@/lib/email';
 import { sendSMS, sendWhatsApp } from '@/lib/sms';
+import { createNotification } from '@/lib/notifications';
 import { EscalationLevel, Client, Invoice, ReminderType, UserSettings } from '@/types';
 
 // POST /api/reminders/send/[id] - Send reminder for invoice
@@ -146,6 +147,15 @@ export async function POST(
                     })
                     .eq('id', (reminder as any).id);
 
+                // Create notification
+                await createNotification({
+                    userId: user.id,
+                    title: 'Reminder Sent',
+                    message: `Level ${escalationLevel} ${type} reminder for invoice ${(invoice as any).invoice_number} sent to ${client.name}.`,
+                    type: 'success',
+                    link: `/invoices/${(invoice as any).id}`,
+                });
+
                 // Add to client history
                 const historyNotes = (client.history_notes as Array<Record<string, unknown>>) || [];
                 historyNotes.push({
@@ -173,6 +183,15 @@ export async function POST(
                         error_message: sendResult.error,
                     })
                     .eq('id', (reminder as any).id);
+
+                // Create error notification
+                await createNotification({
+                    userId: user.id,
+                    title: 'Reminder Failed',
+                    message: `Failed to send ${type} reminder for invoice ${(invoice as any).invoice_number}: ${sendResult.error}`,
+                    type: 'error',
+                    link: `/invoices/${(invoice as any).id}`,
+                });
 
                 return NextResponse.json({ error: sendResult.error || 'Failed to send' }, { status: 500 });
             }
