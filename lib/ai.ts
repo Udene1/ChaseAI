@@ -12,8 +12,6 @@ function getAIClient(settings?: { aiProvider?: string; groqApiKey?: string; open
     const groqKey = (settings?.groqApiKey && settings.groqApiKey.length > 0) ? settings.groqApiKey : process.env.GROQ_API_KEY;
     const xaiKey = (settings?.xaiApiKey && settings.xaiApiKey.length > 0) ? settings.xaiApiKey : process.env.XAI_API_KEY;
 
-    console.log('[AI Debug] Settings received:', JSON.stringify(settings, null, 2));
-    console.log('[AI Debug] Initial Provider:', provider);
 
     // Auto-detection: If using an xAI key in Groq field, switch provider
     if (groqKey?.startsWith('xai-') && provider === 'groq') {
@@ -47,7 +45,6 @@ function getAIClient(settings?: { aiProvider?: string; groqApiKey?: string; open
         };
     }
 
-    console.log('[AI Debug] Falling back to Groq. Key present:', !!groqKey);
 
     return {
         provider: 'groq' as const,
