@@ -37,7 +37,7 @@ function emailWrapper(content: string, brandColor: string = '#10b981', businessN
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, ${brandColor} 0%, #059669 100%); padding: 30px 40px; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">ChaseAI</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">${businessName || 'ChaseAI'}</h1>
               <p style="margin: 5px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">Invoice Payment Reminder</p>
             </td>
           </tr>
