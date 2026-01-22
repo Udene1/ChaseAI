@@ -165,7 +165,7 @@ Respond in JSON format:
             });
             response = completion.choices[0]?.message?.content || '';
         } else if (provider === 'gemini') {
-            const model = (aiClient as GoogleGenerativeAI).getGenerativeModel({ model: 'gemini-pro' });
+            const model = (aiClient as GoogleGenerativeAI).getGenerativeModel({ model: 'gemini-1.5-pro' });
             const result = await model.generateContent(prompt + "\n\nRespond with ONLY valid JSON.");
             response = result.response.text();
 
@@ -320,7 +320,7 @@ Example format: ["Insight 1", "Insight 2", "Insight 3"]`;
             });
             response = completion.choices[0]?.message?.content || '[]';
         } else if (provider === 'gemini') {
-            const model = (aiClient as GoogleGenerativeAI).getGenerativeModel({ model: 'gemini-pro' });
+            const model = (aiClient as GoogleGenerativeAI).getGenerativeModel({ model: 'gemini-1.5-pro' });
             const result = await model.generateContent(prompt + "\n\nRespond with ONLY valid JSON array.");
             response = result.response.text();
 
