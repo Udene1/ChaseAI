@@ -26,6 +26,11 @@ export const metadata: Metadata = {
         description: 'Get paid faster with intelligent invoice chasing',
         type: 'website',
     },
+    icons: {
+        icon: '/logo.png',
+        shortcut: '/logo.png',
+        apple: '/logo.png',
+    },
 };
 
 export default function RootLayout({
