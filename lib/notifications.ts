@@ -21,7 +21,7 @@ export async function createNotification({
     supabaseClient?: any;
 }) {
     try {
-        const supabase = supabaseClient || createClient();
+        const supabase = (supabaseClient || createClient()) as any;
         const { error } = await supabase
             .from('notifications')
             .insert({

@@ -46,16 +46,16 @@ export async function PATCH(request: Request) {
         const { id, markAllAsRead } = await request.json();
 
         if (markAllAsRead) {
-            const { error } = await supabase
-                .from('notifications')
+            const { error } = await (supabase
+                .from('notifications') as any)
                 .update({ is_read: true })
                 .eq('user_id', user.id)
                 .eq('is_read', false);
 
             if (error) throw error;
         } else if (id) {
-            const { error } = await supabase
-                .from('notifications')
+            const { error } = await (supabase
+                .from('notifications') as any)
                 .update({ is_read: true })
                 .eq('user_id', user.id)
                 .eq('id', id);
