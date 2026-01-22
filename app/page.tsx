@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
     Zap,
     Mail,
@@ -18,8 +19,13 @@ export default function LandingPage() {
             <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25">
-                            <Zap className="w-6 h-6 text-white" />
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/10 overflow-hidden relative border border-gray-100">
+                            <Image
+                                src="/logo.png"
+                                alt="ChaseAI Logo"
+                                fill
+                                className="object-cover"
+                            />
                         </div>
                         <span className="text-xl font-bold gradient-text">ChaseAI</span>
                     </Link>
@@ -94,8 +100,13 @@ export default function LandingPage() {
                             </div>
                             <div className="p-8 bg-gradient-to-br from-gray-50 to-white min-h-[400px] flex items-center justify-center">
                                 <div className="text-center">
-                                    <div className="w-20 h-20 bg-gradient-to-br from-primary-400 to-primary-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-primary-500/30">
-                                        <Zap className="w-10 h-10 text-white" />
+                                    <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto shadow-xl shadow-primary-500/10 overflow-hidden relative border border-gray-100">
+                                        <Image
+                                            src="/logo.png"
+                                            alt="ChaseAI Logo"
+                                            fill
+                                            className="object-cover"
+                                        />
                                     </div>
                                     <p className="mt-4 text-gray-500">Dashboard Preview Coming Soon</p>
                                 </div>
@@ -271,8 +282,13 @@ export default function LandingPage() {
             <footer className="py-12 px-6 bg-dark-900 text-gray-400">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center">
-                            <Zap className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden relative">
+                            <Image
+                                src="/logo.png"
+                                alt="ChaseAI Logo"
+                                fill
+                                className="object-cover"
+                            />
                         </div>
                         <span className="text-lg font-bold text-white">ChaseAI</span>
                     </div>

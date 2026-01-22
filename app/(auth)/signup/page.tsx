@@ -7,7 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { Zap, Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -96,8 +97,13 @@ function SignupContent() {
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center gap-2">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25">
-                            <Zap className="w-7 h-7 text-white" />
+                        <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-xl shadow-primary-500/10 overflow-hidden relative border border-gray-100">
+                            <Image
+                                src="/logo.png"
+                                alt="ChaseAI Logo"
+                                fill
+                                className="object-cover"
+                            />
                         </div>
                         <span className="text-2xl font-bold gradient-text">ChaseAI</span>
                     </Link>

@@ -12,9 +12,9 @@ import {
     Bell,
     LogOut,
     Plus,
-    Zap,
     X,
 } from 'lucide-react';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useMobileNav } from '@/lib/context/mobile-nav';
@@ -59,8 +59,13 @@ export function Sidebar() {
                         className="flex items-center gap-2"
                         onClick={() => setIsOpen(false)}
                     >
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25">
-                            <Zap className="w-6 h-6 text-white" />
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/10 overflow-hidden relative border border-gray-100">
+                            <Image
+                                src="/logo.png"
+                                alt="ChaseAI Logo"
+                                fill
+                                className="object-cover"
+                            />
                         </div>
                         <span className="text-xl font-bold gradient-text">ChaseAI</span>
                     </Link>
