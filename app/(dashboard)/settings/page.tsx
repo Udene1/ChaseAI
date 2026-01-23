@@ -95,17 +95,12 @@ export default function SettingsPage() {
     };
 
     const handleManageSubscription = async () => {
-        try {
-            const response = await fetch('/api/stripe/portal', {
-                method: 'POST',
-            });
-            const data = await response.json();
-            if (data.url) {
-                window.location.href = data.url;
-            }
-        } catch (error) {
-            toast.error('Failed to open subscription portal');
+        if (user?.subscription_type === 'lifetime') {
+            toast.info('You have lifetime access! No subscription to manage.');
+            return;
         }
+
+        toast.info('To manage your subscription, please check the link in your latest Paystack invoice email or contact support.');
     };
 
     if (isLoading) {
@@ -139,21 +134,23 @@ export default function SettingsPage() {
                                 <p className="font-semibold text-dark-900 capitalize">
                                     {user?.subscription_type === 'lifetime'
                                         ? '🎉 Lifetime Deal'
-                                        : user?.subscription_type === 'monthly'
-                                            ? 'Monthly Plan'
-                                            : 'Free Plan'}
+                                        : user?.subscription_type === 'early-bird'
+                                            ? 'Early Bird Plan'
+                                            : user?.subscription_type === 'monthly'
+                                                ? 'Monthly Plan'
+                                                : 'Free Plan'}
                                 </p>
                                 <p className="text-sm text-gray-500">
-                                    {user?.subscription_type === 'free'
-                                        ? 'Upgrade to unlock all features'
-                                        : 'You have access to all features'}
+                                    {user?.subscription_status === 'active'
+                                        ? 'You have access to all features'
+                                        : 'Upgrade to unlock all features'}
                                 </p>
                             </div>
-                            {user?.subscription_type === 'free' ? (
+                            {user?.subscription_status !== 'active' && user?.subscription_type !== 'lifetime' ? (
                                 <Button onClick={() => router.push('/pricing')} size="sm">
                                     Upgrade
                                 </Button>
-                            ) : user?.stripe_customer_id ? (
+                            ) : user?.paystack_subscription_code ? (
                                 <Button variant="secondary" size="sm" onClick={handleManageSubscription}>
                                     Manage
                                     <ExternalLink className="w-4 h-4 ml-2" />

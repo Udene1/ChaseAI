@@ -36,6 +36,25 @@ export function createClient() {
 }
 
 /**
+ * Create administrative Supabase client using Service Role eye
+ * Use ONLY in server-side contexts that require bypassing RLS (e.g. webhooks)
+ */
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+
+export function createAdminClient() {
+    return createSupabaseClient<Database>(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false,
+            },
+        }
+    );
+}
+
+/**
  * Get current user from server-side context
  */
 export async function getUser() {

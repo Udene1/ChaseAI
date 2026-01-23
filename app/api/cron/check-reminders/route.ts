@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { sendEmail } from '@/lib/email';
-import { getEmailTemplate } from '@/lib/templates';
+import { getEmailTemplate, getSMSTemplate, getWhatsAppTemplate } from '@/lib/templates';
+import { sendSMS, sendWhatsApp } from '@/lib/sms';
 import { Invoice, Client, EscalationLevel, UserSettings } from '@/types';
 import { createNotification } from '@/lib/notifications';
+import { generateReminder } from '@/lib/ai';
 
 // POST /api/cron/check-reminders - Daily cron job to check and send reminders
 export async function POST(request: Request) {
@@ -107,31 +109,81 @@ export async function POST(request: Request) {
             const settings = invoice.user?.settings || {};
 
             try {
+                // Generate AI reminder message
+                let aiMessage = null;
+                try {
+                    const aiResult = await generateReminder(
+                        invoice,
+                        invoice.client,
+                        (reminder as any).escalation_level as EscalationLevel,
+                        {
+                            aiProvider: settings.aiProvider,
+                            groqApiKey: settings.groqApiKey,
+                            openaiApiKey: settings.openaiApiKey,
+                            geminiApiKey: settings.geminiApiKey,
+                        }
+                    );
+                    aiMessage = aiResult.message;
+                } catch (aiError) {
+                    console.error(`AI generation failed for reminder ${reminder.id}, falling back to template:`, aiError);
+                }
+
                 // Get email template
                 const template = getEmailTemplate(
                     (reminder as any).escalation_level as EscalationLevel,
                     invoice,
                     invoice.client,
-                    undefined,
+                    aiMessage || undefined,
                     settings.businessName
                 );
 
-                // Send email
-                const result = await sendEmail(
-                    {
+                let result: { success: boolean; error?: string };
+
+                // Send based on type
+                if (reminder.type === 'email') {
+                    result = await sendEmail({
                         to: invoice.client.email,
                         subject: template.subject,
                         html: template.html,
                         text: template.text,
                         replyTo: settings.replyToEmail,
+                    });
+                } else if (reminder.type === 'sms') {
+                    if (!invoice.client.phone) {
+                        throw new Error(`Client ${invoice.client.name} has no phone number for SMS`);
                     }
-                );
+                    const smsTemplate = getSMSTemplate((reminder as any).escalation_level as EscalationLevel, invoice, invoice.client);
+                    result = await sendSMS(
+                        { to: invoice.client.phone, message: aiMessage || smsTemplate.message },
+                        {
+                            accountSid: settings.twilioAccountSid,
+                            authToken: settings.twilioAuthToken,
+                            phoneNumber: settings.twilioPhoneNumber,
+                        }
+                    );
+                } else if (reminder.type === 'whatsapp') {
+                    if (!invoice.client.phone) {
+                        throw new Error(`Client ${invoice.client.name} has no phone number for WhatsApp`);
+                    }
+                    const waTemplate = getWhatsAppTemplate((reminder as any).escalation_level as EscalationLevel, invoice, invoice.client);
+                    result = await sendWhatsApp(
+                        { to: invoice.client.phone, message: aiMessage || waTemplate.message },
+                        {
+                            accountSid: settings.twilioAccountSid,
+                            authToken: settings.twilioAuthToken,
+                            whatsappNumber: settings.twilioPhoneNumber,
+                        }
+                    );
+                } else {
+                    throw new Error(`Unsupported reminder type: ${reminder.type}`);
+                }
 
                 if (result.success) {
                     await (supabase.from('reminders') as any)
                         .update({
                             status: 'sent',
                             sent_date: now.toISOString(),
+                            ai_message: aiMessage,
                         })
                         .eq('id', (reminder as any).id);
                     results.sent++;
@@ -140,7 +192,7 @@ export async function POST(request: Request) {
                     await createNotification({
                         userId: invoice.user_id,
                         title: 'Scheduled Reminder Sent',
-                        message: `Automatic level ${(reminder as any).escalation_level} reminder for invoice ${invoice.invoice_number} sent to ${invoice.client.name}.`,
+                        message: `Automatic level ${(reminder as any).escalation_level} ${reminder.type} reminder for invoice ${invoice.invoice_number} sent to ${invoice.client.name}.`,
                         type: 'success',
                         link: `/invoices/${invoice.id}`,
                         supabaseClient: supabase

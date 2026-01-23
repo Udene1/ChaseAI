@@ -16,8 +16,11 @@ export interface Database {
                     id: string;
                     email: string;
                     full_name: string | null;
-                    subscription_type: 'free' | 'monthly' | 'lifetime';
+                    subscription_type: 'free' | 'monthly' | 'early-bird' | 'lifetime';
+                    subscription_status: string | null;
                     stripe_customer_id: string | null;
+                    paystack_customer_code: string | null;
+                    paystack_subscription_code: string | null;
                     default_currency: string;
                     settings: Json;
                     created_at: string;
@@ -26,8 +29,11 @@ export interface Database {
                     id: string;
                     email: string;
                     full_name?: string | null;
-                    subscription_type?: 'free' | 'monthly' | 'lifetime';
+                    subscription_type?: 'free' | 'monthly' | 'early-bird' | 'lifetime';
+                    subscription_status?: string | null;
                     stripe_customer_id?: string | null;
+                    paystack_customer_code?: string | null;
+                    paystack_subscription_code?: string | null;
                     default_currency?: string;
                     settings?: Json;
                     created_at?: string;
@@ -36,8 +42,11 @@ export interface Database {
                     id?: string;
                     email?: string;
                     full_name?: string | null;
-                    subscription_type?: 'free' | 'monthly' | 'lifetime';
+                    subscription_type?: 'free' | 'monthly' | 'early-bird' | 'lifetime';
+                    subscription_status?: string | null;
                     stripe_customer_id?: string | null;
+                    paystack_customer_code?: string | null;
+                    paystack_subscription_code?: string | null;
                     default_currency?: string;
                     settings?: Json;
                     created_at?: string;

@@ -192,18 +192,18 @@ export default function LandingPage() {
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         {/* Monthly Plan */}
-                        <div className="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl transition-shadow">
+                        <div className="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-xl transition-shadow flex flex-col">
                             <div className="text-center">
                                 <h3 className="text-2xl font-bold text-dark-900">Monthly</h3>
-                                <p className="mt-2 text-gray-500">Perfect for getting started</p>
+                                <p className="mt-2 text-gray-500">7-day free trial included</p>
                                 <div className="mt-6">
-                                    <span className="text-5xl font-bold text-dark-900">$19</span>
+                                    <span className="text-4xl font-bold text-dark-900">₦2,999</span>
                                     <span className="text-gray-500">/month</span>
                                 </div>
                             </div>
-                            <ul className="mt-8 space-y-4">
+                            <ul className="mt-8 space-y-4 flex-grow">
                                 {[
                                     'Unlimited invoices',
                                     'Email & SMS reminders',
@@ -221,43 +221,78 @@ export default function LandingPage() {
                                 href="/signup?plan=monthly"
                                 className="mt-8 btn-secondary w-full flex items-center justify-center"
                             >
-                                Start Monthly Plan
+                                Start 7-Day Trial
+                            </Link>
+                        </div>
+
+                        {/* Early Bird Special */}
+                        <div className="bg-white rounded-2xl border-2 border-primary-500 p-8 hover:shadow-xl transition-all relative flex flex-col">
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary-500 text-white text-xs font-bold px-4 py-1.5 rounded-full border-4 border-white">
+                                LIMITED: FIRST 20 USERS
+                            </div>
+                            <div className="text-center">
+                                <h3 className="text-2xl font-bold text-dark-900">Early Bird</h3>
+                                <p className="mt-2 text-primary-600 font-medium">₦1,999 FOREVER</p>
+                                <div className="mt-6 flex items-baseline justify-center gap-2">
+                                    <span className="text-4xl font-bold text-dark-900">₦1,999</span>
+                                    <span className="text-gray-500">/month</span>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1 italic">Price locked for life</p>
+                            </div>
+                            <ul className="mt-8 space-y-4 flex-grow">
+                                {[
+                                    'Everything in Monthly',
+                                    'WhatsApp reminders',
+                                    'Priority support',
+                                    'Founder badge',
+                                ].map((feature, i) => (
+                                    <li key={i} className="flex items-center gap-3">
+                                        <CheckCircle2 className="w-5 h-5 text-primary-500 flex-shrink-0" />
+                                        <span className="text-gray-700">{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link
+                                href="/signup?plan=early-bird"
+                                className="mt-8 bg-primary-600 text-white font-semibold py-4 rounded-xl w-full flex items-center justify-center hover:bg-primary-700 transition-colors shadow-lg shadow-primary-500/25"
+                            >
+                                Claim Early Bird Spot
                             </Link>
                         </div>
 
                         {/* Lifetime Deal */}
-                        <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl p-8 text-white relative overflow-hidden shadow-xl shadow-primary-500/25">
+                        <div className="bg-gradient-to-br from-primary-600 to-indigo-700 rounded-2xl p-8 text-white relative overflow-hidden shadow-xl shadow-primary-500/25 flex flex-col">
                             <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                                 <Star className="w-3 h-3" />
                                 BEST VALUE
                             </div>
                             <div className="text-center">
-                                <h3 className="text-2xl font-bold">Lifetime Deal</h3>
+                                <h3 className="text-2xl font-bold">Lifetime Access</h3>
                                 <p className="mt-2 text-primary-100">Pay once, use forever</p>
                                 <div className="mt-6">
-                                    <span className="text-5xl font-bold">$199</span>
-                                    <span className="text-primary-200 line-through ml-2">$599</span>
+                                    <span className="text-4xl font-bold text-white">₦29,999</span>
+                                    <span className="text-primary-200 line-through ml-2 text-lg">₦150k</span>
                                 </div>
                             </div>
-                            <ul className="mt-8 space-y-4">
+                            <ul className="mt-8 space-y-4 flex-grow">
                                 {[
-                                    'Everything in Monthly',
-                                    'WhatsApp reminders',
-                                    'Advanced AI insights',
-                                    'Priority support',
+                                    'Everything PLUS:',
                                     'All future updates',
+                                    'Custom domain support',
+                                    'Unlimited team members',
+                                    'Advanced security logs',
                                 ].map((feature, i) => (
                                     <li key={i} className="flex items-center gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-primary-200 flex-shrink-0" />
-                                        <span className="text-white">{feature}</span>
+                                        <CheckCircle2 className="w-5 h-5 text-primary-300 flex-shrink-0" />
+                                        <span className="text-primary-50">{feature}</span>
                                     </li>
                                 ))}
                             </ul>
                             <Link
                                 href="/signup?plan=lifetime"
-                                className="mt-8 bg-white text-primary-600 font-semibold py-3 rounded-xl w-full flex items-center justify-center hover:bg-gray-50 transition-colors"
+                                className="mt-8 bg-white text-primary-600 font-bold py-4 rounded-xl w-full flex items-center justify-center hover:bg-gray-50 transition-colors"
                             >
-                                Get Lifetime Access
+                                Get Lifetime Deal
                             </Link>
                         </div>
                     </div>
