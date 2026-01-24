@@ -6,6 +6,7 @@ import { sendSMS, sendWhatsApp } from '@/lib/sms';
 import { Invoice, Client, EscalationLevel, UserSettings } from '@/types';
 import { createNotification } from '@/lib/notifications';
 import { generateReminder } from '@/lib/ai';
+import { initializeTransaction } from '@/lib/paystack';
 
 // POST /api/cron/check-reminders - Daily cron job to check and send reminders
 export async function POST(request: Request) {
@@ -106,9 +107,47 @@ export async function POST(request: Request) {
                 continue;
             }
 
-            const settings = invoice.user?.settings || {};
+            const userSettings = (invoice.user?.settings as UserSettings) || {};
+            const businessName = userSettings.businessName;
 
             try {
+                // Determine payment link
+                let paymentUrl = userSettings.paymentLink;
+
+                if (!paymentUrl) {
+                    // Cast to any to access custom fields if TS is being strict
+                    const inv = invoice as any;
+                    if (inv.paystack_payment_url) {
+                        paymentUrl = inv.paystack_payment_url;
+                    } else {
+                        // Initialize Paystack transaction if NGN
+                        if (invoice.currency === 'NGN') {
+                            try {
+                                const paystackRes = await initializeTransaction({
+                                    email: invoice.client.email,
+                                    amount: Number(invoice.amount),
+                                    metadata: {
+                                        invoice_id: invoice.id,
+                                        user_id: invoice.user_id,
+                                        type: 'invoice_reminder_payment'
+                                    }
+                                });
+
+                                if (paystackRes.status) {
+                                    paymentUrl = paystackRes.data.authorization_url;
+                                    // Update invoice with the link
+                                    await (supabase.from('invoices') as any).update({
+                                        paystack_payment_url: paymentUrl,
+                                        paystack_reference: paystackRes.data.reference
+                                    } as any).eq('id', invoice.id);
+                                }
+                            } catch (error) {
+                                console.error(`Paystack initialization failed for invoice ${invoice.id}:`, error);
+                            }
+                        }
+                    }
+                }
+
                 // Generate AI reminder message
                 let aiMessage = null;
                 try {
@@ -117,10 +156,10 @@ export async function POST(request: Request) {
                         invoice.client,
                         (reminder as any).escalation_level as EscalationLevel,
                         {
-                            aiProvider: settings.aiProvider,
-                            groqApiKey: settings.groqApiKey,
-                            openaiApiKey: settings.openaiApiKey,
-                            geminiApiKey: settings.geminiApiKey,
+                            aiProvider: userSettings.aiProvider,
+                            groqApiKey: userSettings.groqApiKey,
+                            openaiApiKey: userSettings.openaiApiKey,
+                            geminiApiKey: userSettings.geminiApiKey,
                         }
                     );
                     aiMessage = aiResult.message;
@@ -134,7 +173,8 @@ export async function POST(request: Request) {
                     invoice,
                     invoice.client,
                     aiMessage || undefined,
-                    settings.businessName
+                    businessName,
+                    paymentUrl || undefined
                 );
 
                 let result: { success: boolean; error?: string };
@@ -146,32 +186,42 @@ export async function POST(request: Request) {
                         subject: template.subject,
                         html: template.html,
                         text: template.text,
-                        replyTo: settings.replyToEmail,
+                        replyTo: userSettings.replyToEmail,
                     });
                 } else if (reminder.type === 'sms') {
                     if (!invoice.client.phone) {
                         throw new Error(`Client ${invoice.client.name} has no phone number for SMS`);
                     }
-                    const smsTemplate = getSMSTemplate((reminder as any).escalation_level as EscalationLevel, invoice, invoice.client);
+                    const smsTemplate = getSMSTemplate(
+                        (reminder as any).escalation_level as EscalationLevel,
+                        invoice,
+                        invoice.client,
+                        paymentUrl || undefined
+                    );
                     result = await sendSMS(
                         { to: invoice.client.phone, message: aiMessage || smsTemplate.message },
                         {
-                            accountSid: settings.twilioAccountSid,
-                            authToken: settings.twilioAuthToken,
-                            phoneNumber: settings.twilioPhoneNumber,
+                            accountSid: userSettings.twilioAccountSid,
+                            authToken: userSettings.twilioAuthToken,
+                            phoneNumber: userSettings.twilioPhoneNumber,
                         }
                     );
                 } else if (reminder.type === 'whatsapp') {
                     if (!invoice.client.phone) {
                         throw new Error(`Client ${invoice.client.name} has no phone number for WhatsApp`);
                     }
-                    const waTemplate = getWhatsAppTemplate((reminder as any).escalation_level as EscalationLevel, invoice, invoice.client);
+                    const waTemplate = getWhatsAppTemplate(
+                        (reminder as any).escalation_level as EscalationLevel,
+                        invoice,
+                        invoice.client,
+                        paymentUrl || undefined
+                    );
                     result = await sendWhatsApp(
                         { to: invoice.client.phone, message: aiMessage || waTemplate.message },
                         {
-                            accountSid: settings.twilioAccountSid,
-                            authToken: settings.twilioAuthToken,
-                            whatsappNumber: settings.twilioPhoneNumber,
+                            accountSid: userSettings.twilioAccountSid,
+                            authToken: userSettings.twilioAuthToken,
+                            whatsappNumber: userSettings.twilioPhoneNumber,
                         }
                     );
                 } else {

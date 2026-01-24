@@ -97,6 +97,8 @@ export interface Database {
                     status: 'draft' | 'sent' | 'overdue' | 'paid';
                     pdf_url: string | null;
                     stripe_payment_intent_id: string | null;
+                    paystack_payment_url: string | null;
+                    paystack_reference: string | null;
                     created_at: string;
                     updated_at: string;
                 };

@@ -20,7 +20,16 @@ interface SMSTemplate {
 /**
  * Generate base email HTML wrapper
  */
-function emailWrapper(content: string, brandColor: string = '#10b981', businessName?: string): string {
+function emailWrapper(content: string, brandColor: string = '#10b981', businessName?: string, paymentUrl?: string): string {
+  const ctaButton = paymentUrl ? `
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${paymentUrl}" style="background-color: ${brandColor}; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);">
+        Pay Invoice Now
+      </a>
+      <p style="margin: 10px 0 0 0; color: #6b7280; font-size: 12px;">Secure payment powered by Paystack</p>
+    </div>
+  ` : '';
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -45,6 +54,7 @@ function emailWrapper(content: string, brandColor: string = '#10b981', businessN
           <tr>
             <td style="padding: 40px;">
               ${content}
+              ${ctaButton}
             </td>
           </tr>
           <!-- Footer -->
@@ -71,7 +81,8 @@ export function getPoliteReminderEmail(
   invoice: Invoice,
   client: Client | null,
   customMessage?: string,
-  businessName?: string
+  businessName?: string,
+  paymentUrl?: string
 ): EmailTemplate {
   const clientName = client?.name || 'Valued Client';
   const amount = formatCurrency(invoice.amount, invoice.currency as 'NGN' | 'USD');
@@ -113,8 +124,8 @@ export function getPoliteReminderEmail(
 
   return {
     subject: `Friendly Reminder: Invoice ${invoice.invoice_number} Due`,
-    html: emailWrapper(content, '#10b981', businessName),
-    text: `Dear ${clientName},\n\nThis is a friendly reminder from ${businessName || 'us'} about invoice ${invoice.invoice_number} for ${amount}, due on ${dueDate}.\n\nIf you've already sent payment, please disregard this message.\n\nBest regards`,
+    html: emailWrapper(content, '#10b981', businessName, paymentUrl),
+    text: `Dear ${clientName},\n\nThis is a friendly reminder from ${businessName || 'us'} about invoice ${invoice.invoice_number} for ${amount}, due on ${dueDate}.\n\n${paymentUrl ? `Pay here: ${paymentUrl}\n\n` : ''}If you've already sent payment, please disregard this message.\n\nBest regards`,
   };
 }
 
@@ -125,7 +136,8 @@ export function getFirmReminderEmail(
   invoice: Invoice,
   client: Client | null,
   customMessage?: string,
-  businessName?: string
+  businessName?: string,
+  paymentUrl?: string
 ): EmailTemplate {
   const clientName = client?.name || 'Valued Client';
   const amount = formatCurrency(invoice.amount, invoice.currency as 'NGN' | 'USD');
@@ -170,8 +182,8 @@ export function getFirmReminderEmail(
 
   return {
     subject: `Important: Invoice ${invoice.invoice_number} Payment Overdue`,
-    html: emailWrapper(content, '#f59e0b', businessName),
-    text: `Dear ${clientName},\n\nThis is a follow-up from ${businessName || 'us'} regarding invoice ${invoice.invoice_number} for ${amount}, which was due on ${dueDate}.\n\nPlease process the payment within the next 7 days to avoid any service impacts.\n\nThank you for your attention.`,
+    html: emailWrapper(content, '#f59e0b', businessName, paymentUrl),
+    text: `Dear ${clientName},\n\nThis is a follow-up from ${businessName || 'us'} regarding invoice ${invoice.invoice_number} for ${amount}, which was due on ${dueDate}.\n\n${paymentUrl ? `Pay here: ${paymentUrl}\n\n` : ''}Please process the payment within the next 7 days to avoid any service impacts.\n\nThank you for your attention.`,
   };
 }
 
@@ -182,7 +194,8 @@ export function getUrgentReminderEmail(
   invoice: Invoice,
   client: Client | null,
   customMessage?: string,
-  businessName?: string
+  businessName?: string,
+  paymentUrl?: string
 ): EmailTemplate {
   const clientName = client?.name || 'Valued Client';
   const amount = formatCurrency(invoice.amount, invoice.currency as 'NGN' | 'USD');
@@ -298,7 +311,8 @@ export function getEmailTemplate(
   invoice: Invoice,
   client: Client | null,
   customMessage?: string,
-  businessName?: string
+  businessName?: string,
+  paymentUrl?: string
 ): EmailTemplate {
   const templates = {
     1: getPoliteReminderEmail,
@@ -306,7 +320,7 @@ export function getEmailTemplate(
     3: getUrgentReminderEmail,
   };
 
-  return templates[level](invoice, client, customMessage, businessName);
+  return templates[level](invoice, client, customMessage, businessName, paymentUrl);
 }
 
 /**
@@ -315,7 +329,8 @@ export function getEmailTemplate(
 export function getSMSTemplate(
   level: EscalationLevel,
   invoice: Invoice,
-  client: Client | null
+  client: Client | null,
+  paymentUrl?: string
 ): SMSTemplate {
   const clientName = client?.name?.split(' ')[0] || 'Hi';
   const amount = formatCurrency(invoice.amount, invoice.currency as 'NGN' | 'USD');
@@ -328,7 +343,7 @@ export function getSMSTemplate(
       message: `${clientName}, invoice ${invoice.invoice_number} (${amount}) is now overdue. Please process payment within 7 days to avoid service impacts. Contact us if you need assistance.`,
     },
     3: {
-      message: `URGENT: ${clientName}, invoice ${invoice.invoice_number} (${amount}) requires immediate attention. Late fees may apply. Please pay now or contact us immediately.`,
+      message: `URGENT: ${clientName}, invoice ${invoice.invoice_number} (${amount}) requires immediate attention. Late fees may apply. ${paymentUrl ? `Pay here: ${paymentUrl}` : 'Please pay now'} or contact us immediately.`,
     },
   };
 
@@ -341,7 +356,8 @@ export function getSMSTemplate(
 export function getWhatsAppTemplate(
   level: EscalationLevel,
   invoice: Invoice,
-  client: Client | null
+  client: Client | null,
+  paymentUrl?: string
 ): SMSTemplate {
   const clientName = client?.name?.split(' ')[0] || 'Hi';
   const amount = formatCurrency(invoice.amount, invoice.currency as 'NGN' | 'USD');
@@ -354,7 +370,7 @@ export function getWhatsAppTemplate(
       message: `Hi ${clientName},\n\nI wanted to follow up on invoice ${invoice.invoice_number} (${amount}), which is now overdue.\n\nCould you please process the payment this week? If there are any issues, I'm happy to discuss. 🤝`,
     },
     3: {
-      message: `Hi ${clientName},\n\n⚠️ URGENT: Invoice ${invoice.invoice_number} (${amount}) needs immediate attention.\n\nPlease process payment today to avoid late fees. Call or message me if you need to discuss a payment plan.`,
+      message: `Hi ${clientName},\n\n⚠️ URGENT: Invoice ${invoice.invoice_number} (${amount}) needs immediate attention.\n\n${paymentUrl ? `Please pay today here: ${paymentUrl}` : 'Please process payment today'} to avoid late fees. Call or message me if you need to discuss a payment plan.`,
     },
   };
 

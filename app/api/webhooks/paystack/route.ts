@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createAdminClient } from '@/lib/supabase/server';
+import { createNotification } from '@/lib/notifications';
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY!;
 
@@ -30,10 +31,36 @@ export async function POST(req: Request) {
 
         switch (event.event) {
             case 'charge.success': {
-                const { metadata, customer, subscription } = event.data;
+                const { metadata, customer, subscription, reference } = event.data;
                 const userId = metadata?.user_id;
 
-                if (userId) {
+                // 1. Handle Invoice Payment (from automated reminders)
+                if (metadata?.type === 'invoice_reminder_payment' && metadata.invoice_id) {
+                    const invoiceId = metadata.invoice_id;
+                    const { error: invError } = await (supabase.from('invoices') as any)
+                        .update({
+                            status: 'paid',
+                            paystack_reference: reference
+                        } as any)
+                        .eq('id', invoiceId);
+
+                    if (invError) {
+                        console.error('Error updating invoice on charge.success:', invError);
+                    } else {
+                        // Create notification for user
+                        await createNotification({
+                            userId: userId || metadata.user_id,
+                            title: 'Invoice Paid',
+                            message: `Invoice ${metadata.invoice_number || 'remitted'} has been paid via Paystack.`,
+                            type: 'success',
+                            link: `/invoices/${invoiceId}`,
+                            supabaseClient: supabase
+                        });
+                    }
+                }
+
+                // 2. Handle Subscription / User Profile Updates
+                if (userId && (metadata.plan || metadata.type === 'subscription')) {
                     const updateData: any = {
                         paystack_customer_code: customer.customer_code,
                         subscription_status: 'active',
