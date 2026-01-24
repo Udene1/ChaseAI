@@ -62,7 +62,8 @@ export function Modal({
             {/* Modal content */}
             <div
                 className={cn(
-                    'relative w-full mx-4 bg-white rounded-2xl shadow-2xl animate-scale-in',
+                    'relative w-full mx-4 bg-white rounded-2xl shadow-2xl animate-scale-in flex flex-col overflow-hidden',
+                    'max-h-[90vh]',
                     sizes[size]
                 )}
                 role="dialog"
@@ -71,7 +72,7 @@ export function Modal({
             >
                 {/* Header */}
                 {(title || showCloseButton) && (
-                    <div className="flex items-start justify-between p-6 border-b border-gray-100">
+                    <div className="flex items-start justify-between p-6 border-b border-gray-100 flex-shrink-0">
                         <div>
                             {title && (
                                 <h2 id="modal-title" className="text-xl font-semibold text-dark-900">
@@ -94,7 +95,7 @@ export function Modal({
                 )}
 
                 {/* Body */}
-                <div className="p-6">{children}</div>
+                <div className="p-6 overflow-y-auto custom-scrollbar">{children}</div>
             </div>
         </div>
     );

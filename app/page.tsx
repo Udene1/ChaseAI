@@ -114,39 +114,39 @@ export default function LandingPage() {
                                     <div className="w-6" />
                                 </div>
 
-                                <div className="p-10 lg:p-14 bg-white grid lg:grid-cols-[1fr_320px] gap-12">
-                                    <div className="space-y-8 animate-float">
-                                        <div className="flex items-end justify-between border-b border-gray-50 pb-6">
-                                            <div>
-                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Outstanding</p>
-                                                <h3 className="text-4xl font-extrabold text-dark-900">₦1,240,500</h3>
+                                <div className="p-6 md:p-10 lg:p-14 bg-white grid lg:grid-cols-[1fr_320px] gap-8 md:gap-12">
+                                    <div className="space-y-6 md:space-y-8 animate-float">
+                                        <div className="flex items-end justify-between border-b border-gray-50 pb-6 overflow-hidden">
+                                            <div className="min-w-0">
+                                                <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 truncate">Total Outstanding</p>
+                                                <h3 className="text-2xl md:text-4xl font-extrabold text-dark-900 truncate">₦1,240,500</h3>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">AI Savings</p>
-                                                <h3 className="text-2xl font-bold text-primary-600">+₦450k <span className="text-xs font-normal text-gray-400">returned</span></h3>
+                                            <div className="text-right flex-shrink-0 ml-4">
+                                                <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">AI Savings</p>
+                                                <h3 className="text-lg md:text-2xl font-bold text-primary-600">+₦450k <span className="hidden sm:inline text-xs font-normal text-gray-400 font-medium">returned</span></h3>
                                             </div>
                                         </div>
 
                                         <div className="space-y-4">
-                                            <p className="text-sm font-bold text-dark-900">Recent Automatic Chases</p>
+                                            <p className="text-xs md:text-sm font-bold text-dark-900">Recent Automatic Chases</p>
                                             {[
                                                 { client: 'Ace Design Agency', amount: '₦250,000', status: 'Sent L2', time: '2m ago' },
                                                 { client: 'Global Connect Ltd', amount: '₦120,500', status: 'Paid', time: '1h ago', isPaid: true },
                                                 { client: 'Sarah Williams', amount: '₦45,000', status: 'Drafting L1', time: 'Just now' }
                                             ].map((item, i) => (
-                                                <div key={i} className={`flex items-center justify-between p-4 rounded-2xl border ${item.isPaid ? 'bg-primary-50/30 border-primary-100' : 'bg-white border-gray-100'} shadow-sm`}>
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${item.isPaid ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-400'}`}>
+                                                <div key={i} className={`flex items-center justify-between p-3 md:p-4 rounded-xl md:rounded-2xl border ${item.isPaid ? 'bg-primary-50/30 border-primary-100' : 'bg-white border-gray-100'} shadow-sm overflow-hidden`}>
+                                                    <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                                                        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl flex-shrink-0 flex items-center justify-center font-bold text-xs md:text-base ${item.isPaid ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-400'}`}>
                                                             {item.client[0]}
                                                         </div>
-                                                        <div>
-                                                            <p className="text-sm font-bold text-dark-900">{item.client}</p>
-                                                            <p className="text-xs text-gray-400">{item.time}</p>
+                                                        <div className="min-w-0">
+                                                            <p className="text-xs md:text-sm font-bold text-dark-900 truncate">{item.client}</p>
+                                                            <p className="text-[10px] text-gray-400">{item.time}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="text-right">
-                                                        <p className="text-sm font-bold text-dark-900">{item.amount}</p>
-                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter ${item.isPaid ? 'bg-primary-200 text-primary-700' : 'bg-blue-50 text-blue-600'}`}>
+                                                    <div className="text-right flex-shrink-0 ml-2">
+                                                        <p className="text-xs md:text-sm font-bold text-dark-900">{item.amount}</p>
+                                                        <span className={`text-[8px] md:text-[10px] font-bold px-1.5 md:px-2 py-0.5 rounded-full uppercase tracking-tighter ${item.isPaid ? 'bg-primary-200 text-primary-700' : 'bg-blue-50 text-blue-600'}`}>
                                                             {item.status}
                                                         </span>
                                                     </div>
@@ -155,7 +155,7 @@ export default function LandingPage() {
                                         </div>
                                     </div>
 
-                                    <div className="bg-gray-50/50 rounded-3xl p-6 border border-gray-100 flex flex-col justify-between relative overflow-hidden group/ai">
+                                    <div className="hidden lg:flex bg-gray-50/50 rounded-3xl p-6 border border-gray-100 flex-col justify-between relative overflow-hidden group/ai">
                                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover/ai:opacity-10 transition-opacity">
                                             <Brain className="w-32 h-32" />
                                         </div>
