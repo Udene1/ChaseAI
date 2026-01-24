@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { sendEmail } from '@/lib/email';
+import { getWelcomeEmail } from '@/lib/templates';
 
 export async function GET(request: Request) {
     const requestUrl = new URL(request.url);
@@ -23,14 +25,31 @@ export async function GET(request: Request) {
                     .single();
 
                 if (!profile) {
+                    const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
+                    const marketingOptIn = user.user_metadata?.marketing_opt_in === true;
+
                     // Create user profile
                     const { error: insertError } = await supabase.from('users').insert({
                         id: user.id,
                         email: user.email!,
-                        full_name: user.user_metadata?.full_name || user.user_metadata?.name || (null as any),
+                        full_name: fullName,
+                        marketing_opt_in: marketingOptIn,
                     } as any);
 
-                    if (insertError) {
+                    if (!insertError) {
+                        // Send welcome email
+                        try {
+                            const welcomeTemplate = getWelcomeEmail(fullName);
+                            await sendEmail({
+                                to: user.email!,
+                                subject: welcomeTemplate.subject,
+                                html: welcomeTemplate.html,
+                                text: welcomeTemplate.text,
+                            });
+                        } catch (emailError) {
+                            console.error('Error sending welcome email:', emailError);
+                        }
+                    } else {
                         console.error('Error creating user profile:', insertError);
                     }
                 }

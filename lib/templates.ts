@@ -376,3 +376,39 @@ export function getWhatsAppTemplate(
 
   return templates[level];
 }
+
+/**
+ * Generate welcome email for new users
+ */
+export function getWelcomeEmail(userName: string): EmailTemplate {
+  const content = `
+    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+      Hi ${userName},
+    </p>
+    <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+      Welcome to <strong>ChaseAI</strong>! We're excited to help you automate your accounts receivable and get you paid faster.
+    </p>
+    <div style="background-color: #f0fdf4; border-radius: 8px; padding: 25px; margin: 25px 0; border: 1px solid #dcfce7;">
+      <h3 style="margin: 0 0 15px 0; color: #166534; font-size: 18px;">Quick Start Guide:</h3>
+      <ul style="margin: 0; padding: 0 0 0 20px; color: #374151; font-size: 15px; line-height: 2;">
+        <li>Connect your <strong>Paystack</strong> account in Settings</li>
+        <li>Add your first <strong>Client</strong></li>
+        <li>Create an <strong>Invoice</strong> and enable AI reminding</li>
+      </ul>
+    </div>
+    <p style="margin: 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
+      Our AI is already warming up to help you handle those "awkward" conversations professionally.
+    </p>
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://chaseai.app'}/dashboard" style="background-color: #10b981; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 16px; display: inline-block;">
+        Go to Dashboard
+      </a>
+    </div>
+  `;
+
+  return {
+    subject: 'Welcome to ChaseAI! 🚀',
+    html: emailWrapper(content, '#10b981', 'ChaseAI Welcome'),
+    text: `Hi ${userName},\n\nWelcome to ChaseAI! We're excited to help you get paid faster. Check out your dashboard to get started: ${process.env.NEXT_PUBLIC_APP_URL || 'https://chaseai.app'}/dashboard`,
+  };
+}

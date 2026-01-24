@@ -59,6 +59,7 @@ export interface UserSettings {
     defaultCurrency?: Currency;
     xaiApiKey?: string;
     paymentLink?: string;
+    marketing_opt_in?: boolean;
 }
 
 // Invoice with client details

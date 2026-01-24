@@ -17,6 +17,7 @@ const signupSchema = z.object({
     fullName: z.string().min(2, 'Name must be at least 2 characters'),
     email: z.string().email('Please enter a valid email'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
+    marketingOptIn: z.boolean().default(false),
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
@@ -46,6 +47,7 @@ function SignupContent() {
                 options: {
                     data: {
                         full_name: data.fullName,
+                        marketing_opt_in: data.marketingOptIn,
                     },
                     emailRedirectTo: `${window.location.origin}/auth/callback`,
                 },
@@ -181,6 +183,18 @@ function SignupContent() {
                             helper="Must be at least 8 characters"
                             leftIcon={<Lock className="w-5 h-5" />}
                         />
+
+                        <div className="flex items-center gap-3 p-1">
+                            <input
+                                {...register('marketingOptIn')}
+                                type="checkbox"
+                                id="marketingOptIn"
+                                className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                            />
+                            <label htmlFor="marketingOptIn" className="text-sm text-gray-600 cursor-pointer select-none">
+                                I&apos;d like to receive tips and updates about ChaseAI
+                            </label>
+                        </div>
 
                         <Button type="submit" className="w-full" isLoading={isLoading}>
                             Create Account

@@ -23,6 +23,7 @@ export interface Database {
                     paystack_subscription_code: string | null;
                     default_currency: string;
                     settings: Json;
+                    marketing_opt_in: boolean;
                     created_at: string;
                 };
                 Insert: {
@@ -36,6 +37,7 @@ export interface Database {
                     paystack_subscription_code?: string | null;
                     default_currency?: string;
                     settings?: Json;
+                    marketing_opt_in?: boolean;
                     created_at?: string;
                 };
                 Update: {
@@ -49,6 +51,7 @@ export interface Database {
                     paystack_subscription_code?: string | null;
                     default_currency?: string;
                     settings?: Json;
+                    marketing_opt_in?: boolean;
                     created_at?: string;
                 };
             };
