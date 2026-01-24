@@ -49,6 +49,15 @@ export default function LandingPage() {
                             <span>Get Started Free</span>
                         </Link>
                     </nav>
+                    {/* Mobile Sign In */}
+                    <div className="md:hidden flex items-center gap-3">
+                        <Link href="/login" className="text-sm font-bold text-gray-500 hover:text-primary-600 px-3 py-2 transition-colors">
+                            Sign In
+                        </Link>
+                        <Link href="/signup" className="btn-primary text-xs px-4 py-2">
+                            Join
+                        </Link>
+                    </div>
                 </div>
             </header>
 

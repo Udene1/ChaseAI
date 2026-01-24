@@ -58,6 +58,7 @@ export interface UserSettings {
     aiProvider?: 'groq' | 'openai' | 'xai' | 'gemini';
     defaultCurrency?: Currency;
     xaiApiKey?: string;
+    paymentLink?: string;
 }
 
 // Invoice with client details

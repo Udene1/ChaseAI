@@ -292,6 +292,14 @@ export default function SettingsPage() {
                             helper="Client replies will be sent to this address"
                             leftIcon={<Mail className="w-5 h-5" />}
                         />
+                        <Input
+                            label="Default Payment Link"
+                            value={settings.paymentLink || ''}
+                            onChange={(e) => updateSetting('paymentLink', e.target.value)}
+                            placeholder="e.g. https://paystack.com/pay/your-link"
+                            helper="If provided, this link will be prioritized in your reminder emails"
+                            leftIcon={<CreditCard className="w-5 h-5" />}
+                        />
                     </CardContent>
                 </Card>
 
