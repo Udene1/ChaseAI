@@ -14,8 +14,8 @@ export async function POST(request: Request) {
         const supabase = createClient();
 
         // 1. Authenticate user by API Key
-        const { data: user, error: authError } = await supabase
-            .from('users')
+        const { data: user, error: authError } = await (supabase
+            .from('users') as any)
             .select('id, subscription_type, credits_balance')
             .eq('api_key', apiKey)
             .single();
@@ -52,8 +52,8 @@ export async function POST(request: Request) {
 
         // 4. Find or Create Client
         let clientId: string;
-        const { data: existingClient } = await supabase
-            .from('clients')
+        const { data: existingClient } = await (supabase
+            .from('clients') as any)
             .select('id')
             .eq('user_id', user.id)
             .eq('email', client_email)
@@ -62,8 +62,8 @@ export async function POST(request: Request) {
         if (existingClient) {
             clientId = existingClient.id;
         } else {
-            const { data: newClient, error: clientError } = await supabase
-                .from('clients')
+            const { data: newClient, error: clientError } = await (supabase
+                .from('clients') as any)
                 .insert({
                     user_id: user.id,
                     name: client_name || client_email.split('@')[0],
@@ -79,8 +79,8 @@ export async function POST(request: Request) {
         }
 
         // 5. Create Invoice
-        const { data: invoice, error: invError } = await supabase
-            .from('invoices')
+        const { data: invoice, error: invError } = await (supabase
+            .from('invoices') as any)
             .insert({
                 user_id: user.id,
                 client_id: clientId,
