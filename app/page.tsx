@@ -465,6 +465,12 @@ export default function LandingPage() {
                                     <li><Link href="/privacy" className="hover:text-primary-400 transition-colors">Privacy</Link></li>
                                     <li><Link href="/terms" className="hover:text-primary-400 transition-colors">Terms</Link></li>
                                     <li><a href="https://x.com/ChaseAi35571" target="_blank" rel="noopener noreferrer" className="hover:text-primary-400 transition-colors">Twitter (X)</a></li>
+                                    <li>
+                                        <a href="mailto:support@verimut.icu" className="flex items-center gap-2 hover:text-primary-400 transition-colors group">
+                                            <Mail className="w-4 h-4 text-gray-400 group-hover:text-primary-400 transition-colors" />
+                                            <span>Support</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
