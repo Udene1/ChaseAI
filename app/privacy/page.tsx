@@ -26,7 +26,7 @@ export default function PrivacyPolicy() {
                     <div className="prose prose-slate max-w-none space-y-12 text-gray-600 leading-relaxed">
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Information We Collect</h2>
-                            <p>To provide ChaseAI's invoice chasing services, we collect several types of information from and about users of our Service, including:</p>
+                            <p>To provide ChaseAI&apos;s invoice chasing services, we collect several types of information from and about users of our Service, including:</p>
                             <ul className="list-disc pl-6 space-y-2 mt-4">
                                 <li><strong>Account Information:</strong> Name, email address, and company details provided during registration.</li>
                                 <li><strong>Invoice Data:</strong> Details of the invoices you upload or sync, including client names, email addresses, payment due dates, and amounts.</li>
@@ -39,7 +39,7 @@ export default function PrivacyPolicy() {
                             <p>We use the information we collect to:</p>
                             <ul className="list-disc pl-6 space-y-2 mt-4">
                                 <li>Generate and send personalized payment reminders to your clients.</li>
-                                <li>Analyze payment behaviors to improve our "Smart Chasing" AI engine.</li>
+                                <li>Analyze payment behaviors to improve our &quot;Smart Chasing&quot; AI engine.</li>
                                 <li>Communicate with you regarding your account and service updates.</li>
                                 <li>Comply with regulatory requirements in Nigeria.</li>
                             </ul>
