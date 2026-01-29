@@ -23,15 +23,48 @@ export const metadata: Metadata = {
         'NGN',
     ],
     authors: [{ name: 'ChaseAI' }],
+    metadataBase: new URL('https://chase-ai.vercel.app'),
+    alternates: {
+        canonical: '/',
+    },
     openGraph: {
         title: 'ChaseAI - AI-Powered Invoice Chaser',
         description: 'Get paid faster with intelligent invoice chasing',
+        url: 'https://chase-ai.vercel.app',
+        siteName: 'ChaseAI',
+        images: [
+            {
+                url: '/logo.png',
+                width: 800,
+                height: 600,
+                alt: 'ChaseAI Logo',
+            },
+        ],
+        locale: 'en_NG',
         type: 'website',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'ChaseAI - AI-Powered Invoice Chaser',
+        description: 'Automate your late payment reminders with AI.',
+        images: ['/logo.png'],
+        creator: '@chaseai',
     },
     icons: {
         icon: '/logo.png',
         shortcut: '/logo.png',
         apple: '/logo.png',
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
     },
 };
 
