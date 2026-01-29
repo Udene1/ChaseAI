@@ -48,7 +48,7 @@ export const metadata: Metadata = {
         title: 'ChaseAI - AI-Powered Invoice Chaser',
         description: 'Automate your late payment reminders with AI.',
         images: ['/logo.png'],
-        creator: '@chaseai',
+        creator: '@ChaseAi35571',
     },
     icons: {
         icon: '/logo.png',

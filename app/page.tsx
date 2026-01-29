@@ -464,7 +464,7 @@ export default function LandingPage() {
                                 <ul className="space-y-4 text-sm font-medium text-gray-400">
                                     <li><a href="#" className="hover:text-primary-400 transition-colors">Privacy</a></li>
                                     <li><a href="#" className="hover:text-primary-400 transition-colors">Terms</a></li>
-                                    <li><a href="#" className="hover:text-primary-400 transition-colors">Twitter</a></li>
+                                    <li><a href="https://x.com/ChaseAi35571" target="_blank" rel="noopener noreferrer" className="hover:text-primary-400 transition-colors">Twitter (X)</a></li>
                                 </ul>
                             </div>
                         </div>
