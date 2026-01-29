@@ -60,6 +60,8 @@ export interface UserSettings {
     xaiApiKey?: string;
     paymentLink?: string;
     marketing_opt_in?: boolean;
+    api_key?: string;
+    credits_balance?: number;
 }
 
 // Invoice with client details

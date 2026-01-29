@@ -23,6 +23,10 @@ export interface Database {
                     paystack_subscription_code: string | null;
                     default_currency: string;
                     settings: Json;
+                    api_key: string | null;
+                    api_key_created_at: string | null;
+                    api_key_last_used: string | null;
+                    credits_balance: number;
                     marketing_opt_in: boolean;
                     created_at: string;
                 };
@@ -37,6 +41,10 @@ export interface Database {
                     paystack_subscription_code?: string | null;
                     default_currency?: string;
                     settings?: Json;
+                    api_key?: string | null;
+                    api_key_created_at?: string | null;
+                    api_key_last_used?: string | null;
+                    credits_balance?: number;
                     marketing_opt_in?: boolean;
                     created_at?: string;
                 };
@@ -51,6 +59,10 @@ export interface Database {
                     paystack_subscription_code?: string | null;
                     default_currency?: string;
                     settings?: Json;
+                    api_key?: string | null;
+                    api_key_created_at?: string | null;
+                    api_key_last_used?: string | null;
+                    credits_balance?: number;
                     marketing_opt_in?: boolean;
                     created_at?: string;
                 };

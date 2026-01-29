@@ -19,6 +19,9 @@ import {
     Loader2,
     ExternalLink,
     Check,
+    Copy,
+    RefreshCw,
+    Puzzle,
 } from 'lucide-react';
 import { User, UserSettings } from '@/types';
 
@@ -33,6 +36,9 @@ export default function SettingsPage() {
         defaultCurrency: 'NGN',
         preferWhatsApp: false,
     });
+    const [apiKey, setApiKey] = useState<string | null>(null);
+    const [isGeneratingKey, setIsGeneratingKey] = useState(false);
+    const [showKey, setShowKey] = useState(false);
 
     const loadUserSettings = useCallback(async () => {
         try {
@@ -101,6 +107,33 @@ export default function SettingsPage() {
         }
 
         toast.info('To manage your subscription, please check the link in your latest Paystack invoice email or contact support.');
+    };
+
+    const handleGenerateKey = async () => {
+        setIsGeneratingKey(true);
+        try {
+            const res = await fetch('/api/keys', { method: 'POST' });
+            const data = await res.json();
+
+            if (data.success) {
+                setApiKey(data.api_key);
+                setShowKey(true);
+                toast.success('API Key generated! Copy it now as it won\'t be shown again.');
+                // Refresh user data to show last used/created dates
+                loadUserSettings();
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            toast.error('Failed to generate API key');
+        } finally {
+            setIsGeneratingKey(false);
+        }
+    };
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        toast.success('Copied to clipboard!');
     };
 
     if (isLoading) {
@@ -300,6 +333,101 @@ export default function SettingsPage() {
                             helper="If provided, this link will be prioritized in your reminder emails"
                             leftIcon={<CreditCard className="w-5 h-5" />}
                         />
+                    </CardContent>
+                </Card>
+                {/* API & Integrations */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Puzzle className="w-5 h-5 text-primary-600" />
+                            API & Integrations
+                        </CardTitle>
+                        <CardDescription>Connect ChaseAI to external tools like Zapier or QuickBooks</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <div className="flex items-center justify-between mb-4">
+                                <div>
+                                    <p className="font-bold text-dark-900">Personal API Key</p>
+                                    <p className="text-xs text-gray-500 mt-1">Use this to authenticate requests to the Public API</p>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleGenerateKey}
+                                    isLoading={isGeneratingKey}
+                                >
+                                    <RefreshCw className="w-4 h-4 mr-2" />
+                                    {user?.api_key ? 'Rotate Key' : 'Generate Key'}
+                                </Button>
+                            </div>
+
+                            {showKey && apiKey ? (
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-2 p-3 bg-white border border-primary-100 rounded-xl">
+                                        <code className="flex-1 text-xs font-mono text-primary-700 break-all">{apiKey}</code>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-primary-600"
+                                            onClick={() => copyToClipboard(apiKey)}
+                                        >
+                                            <Copy className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                    <p className="text-[10px] text-amber-600 font-bold flex items-center gap-1">
+                                        <Shield className="w-3 h-3" />
+                                        Make sure to copy this. It will not be shown again for security.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="flex items-center justify-between py-2 border-t border-gray-100 mt-4">
+                                    <div className="text-xs text-gray-500">
+                                        Last used: <span className="font-medium text-dark-900">
+                                            {user?.api_key_last_used
+                                                ? new Date(user.api_key_last_used).toLocaleDateString()
+                                                : 'Never'}
+                                        </span>
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                        Credits Balance: <span className="font-bold text-primary-600">
+                                            {user?.credits_balance || 0}
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-4 border border-gray-100 rounded-2xl flex flex-col justify-between">
+                                <div>
+                                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
+                                        <ExternalLink className="w-4 h-4 text-orange-600" />
+                                    </div>
+                                    <p className="font-bold text-sm">Zapier Integration</p>
+                                    <p className="text-xs text-gray-500 mt-1">Automate invoice imports from 5,000+ apps.</p>
+                                </div>
+                                <Button variant="link" className="p-0 h-auto text-xs text-primary-600 justify-start mt-4" asChild>
+                                    <a href="https://zapier.com/apps/chaseai/integrations" target="_blank" rel="noopener noreferrer">
+                                        View on Zapier →
+                                    </a>
+                                </Button>
+                            </div>
+                            <div className="p-4 border border-gray-100 rounded-2xl flex flex-col justify-between">
+                                <div>
+                                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                                        <FileText className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <p className="font-bold text-sm">API Documentation</p>
+                                    <p className="text-xs text-gray-500 mt-1">Read the guide on how to use the REST API.</p>
+                                </div>
+                                <Button variant="link" className="p-0 h-auto text-xs text-primary-600 justify-start mt-4" asChild>
+                                    <Link href="/docs/api">
+                                        Open Docs →
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
 
