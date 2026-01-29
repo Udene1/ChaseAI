@@ -409,11 +409,14 @@ export default function SettingsPage() {
                                     <p className="font-bold text-sm">Zapier Integration</p>
                                     <p className="text-xs text-gray-500 mt-1">Automate invoice imports from 5,000+ apps.</p>
                                 </div>
-                                <Button variant="link" className="p-0 h-auto text-xs text-primary-600 justify-start mt-4" asChild>
-                                    <a href="https://zapier.com/apps/chaseai/integrations" target="_blank" rel="noopener noreferrer">
-                                        View on Zapier →
-                                    </a>
-                                </Button>
+                                <a
+                                    href="https://zapier.com/apps/chaseai/integrations"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-primary-600 font-medium hover:underline justify-start mt-4 inline-block"
+                                >
+                                    View on Zapier →
+                                </a>
                             </div>
                             <div className="p-4 border border-gray-100 rounded-2xl flex flex-col justify-between">
                                 <div>
@@ -423,11 +426,12 @@ export default function SettingsPage() {
                                     <p className="font-bold text-sm">API Documentation</p>
                                     <p className="text-xs text-gray-500 mt-1">Read the guide on how to use the REST API.</p>
                                 </div>
-                                <Button variant="link" className="p-0 h-auto text-xs text-primary-600 justify-start mt-4" asChild>
-                                    <Link href="/docs/api">
-                                        Open Docs →
-                                    </Link>
-                                </Button>
+                                <Link
+                                    href="/docs/api"
+                                    className="text-xs text-primary-600 font-medium hover:underline justify-start mt-4 inline-block"
+                                >
+                                    Open Docs →
+                                </Link>
                             </div>
                         </div>
                     </CardContent>
