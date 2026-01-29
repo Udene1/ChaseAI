@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import { Header } from '@/components/layout/header';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -22,6 +23,7 @@ import {
     Copy,
     RefreshCw,
     Puzzle,
+    FileText,
 } from 'lucide-react';
 import { User, UserSettings } from '@/types';
 
