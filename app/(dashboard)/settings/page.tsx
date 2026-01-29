@@ -370,7 +370,7 @@ export default function SettingsPage() {
                                         <code className="flex-1 text-xs font-mono text-primary-700 break-all">{apiKey}</code>
                                         <Button
                                             variant="ghost"
-                                            size="icon"
+                                            size="sm"
                                             className="h-8 w-8 text-primary-600"
                                             onClick={() => copyToClipboard(apiKey)}
                                         >
