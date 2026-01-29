@@ -14,8 +14,7 @@ export async function POST() {
         const newKey = crypto.randomUUID();
         const supabase = createClient();
 
-        const { error } = await supabase
-            .from('users')
+        const { error } = await (supabase.from('users') as any)
             .update({
                 api_key: newKey,
                 api_key_created_at: new Date().toISOString(),

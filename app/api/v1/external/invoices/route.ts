@@ -100,15 +100,15 @@ export async function POST(request: Request) {
 
         // 6. Deduct Credits (if applicable)
         if (!isPaidUser && hasCredits) {
-            await supabase
-                .from('users')
+            await (supabase
+                .from('users') as any)
                 .update({ credits_balance: (user.credits_balance || 0) - 5 })
                 .eq('id', user.id);
         }
 
         // 7. Log Usage
-        await supabase
-            .from('users')
+        await (supabase
+            .from('users') as any)
             .update({ api_key_last_used: new Date().toISOString() })
             .eq('id', user.id);
 
