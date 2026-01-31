@@ -13,8 +13,13 @@ export async function GET(request: Request) {
             apiKey = searchParams.get('api_key') || undefined;
         }
 
+        console.log('Received API Key:', apiKey ? `${apiKey.substring(0, 5)}...` : 'None');
+
         if (!apiKey) {
-            return NextResponse.json({ error: 'Unauthorized: Missing API Key' }, { status: 401 });
+            return NextResponse.json({
+                error: 'Unauthorized: Missing API Key',
+                hint: 'Get your API key from ChaseAI Settings page (Settings → API & Integrations)'
+            }, { status: 401 });
         }
         const supabase = createClient();
 
@@ -22,11 +27,15 @@ export async function GET(request: Request) {
         const { data: user, error } = await (supabase
             .from('users') as any)
             .select('id, email, full_name, subscription_type')
-            .eq('api_key', apiKey)
+            .eq('api_key', apiKey.trim()) // Ensure no whitespace
             .single();
 
         if (error || !user) {
-            return NextResponse.json({ error: 'Unauthorized: Invalid API Key' }, { status: 401 });
+            console.error('API Key Lookup Error:', error);
+            return NextResponse.json({
+                error: 'Unauthorized: Invalid API Key',
+                hint: 'Make sure you copied the full API key from ChaseAI Settings. Generate a new one if needed.'
+            }, { status: 401 });
         }
 
         // Return user details for Zapier "Connection Label"

@@ -37,17 +37,51 @@ export async function POST(request: Request) {
 
         // 3. Parse and Validate Body
         const body = await request.json();
-        const {
+        let {
             client_name,
             client_email,
             amount,
-            currency = 'NGN',
+            currency,
             due_date,
             description
         } = body;
 
-        if (!client_email || !amount || !due_date) {
-            return NextResponse.json({ error: 'Missing required fields: client_email, amount, due_date' }, { status: 400 });
+        // Smart Defaults
+        currency = currency || 'NGN';
+
+        // Validate required fields
+        if (!client_email || !amount) {
+            return NextResponse.json({
+                error: 'Missing required fields',
+                details: {
+                    client_email: !client_email ? 'Required. Example: client@domain.com' : undefined,
+                    amount: !amount ? 'Required. Example: 50000' : undefined
+                }
+            }, { status: 400 });
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(client_email)) {
+            return NextResponse.json({
+                error: 'Invalid email format',
+                details: 'client_email must be a valid email. Example: client@domain.com'
+            }, { status: 400 });
+        }
+
+        // Smart default for due_date: use today if not provided or invalid
+        if (!due_date) {
+            const today = new Date();
+            due_date = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+        } else {
+            // Validate date format (YYYY-MM-DD)
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!dateRegex.test(due_date)) {
+                return NextResponse.json({
+                    error: 'Invalid date format',
+                    details: 'due_date must be in YYYY-MM-DD format. Example: 2026-01-30'
+                }, { status: 400 });
+            }
         }
 
         // 4. Find or Create Client

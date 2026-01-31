@@ -351,7 +351,7 @@ export default function SettingsPage() {
                             <div className="flex items-center justify-between mb-4">
                                 <div>
                                     <p className="font-bold text-dark-900">Personal API Key</p>
-                                    <p className="text-xs text-gray-500 mt-1">Use this to authenticate requests to the Public API</p>
+                                    <p className="text-xs text-gray-500 mt-1">Use this to authenticate requests to the Public API and connect Zapier</p>
                                 </div>
                                 <Button
                                     variant="outline"
@@ -383,55 +383,71 @@ export default function SettingsPage() {
                                     </p>
                                 </div>
                             ) : (
-                                <div className="flex items-center justify-between py-2 border-t border-gray-100 mt-4">
-                                    <div className="text-xs text-gray-500">
-                                        Last used: <span className="font-medium text-dark-900">
-                                            {user?.api_key_last_used
-                                                ? new Date(user.api_key_last_used).toLocaleDateString()
-                                                : 'Never'}
-                                        </span>
+                                <>
+                                    <div className="flex items-center justify-between py-2 border-t border-gray-100 mt-4">
+                                        <div className="text-xs text-gray-500">
+                                            Last used: <span className="font-medium text-dark-900">
+                                                {user?.api_key_last_used
+                                                    ? new Date(user.api_key_last_used).toLocaleDateString()
+                                                    : 'Never'}
+                                            </span>
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            Credits Balance: <span className="font-bold text-primary-600">
+                                                {user?.credits_balance || 0}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="text-xs text-gray-500">
-                                        Credits Balance: <span className="font-bold text-primary-600">
-                                            {user?.credits_balance || 0}
-                                        </span>
-                                    </div>
-                                </div>
+
+                                    {user?.api_key && (
+                                        <div className="mt-4 space-y-2">
+                                            <p className="text-xs font-semibold text-gray-700">API Endpoints:</p>
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2 p-2 bg-white rounded-lg border">
+                                                    <code className="flex-1 text-[10px] font-mono text-gray-600 break-all">
+                                                        {typeof window !== 'undefined' ? window.location.origin : ''}/api/v1/me
+                                                    </code>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-6 w-6 text-gray-500"
+                                                        onClick={() => copyToClipboard(`${typeof window !== 'undefined' ? window.location.origin : ''}/api/v1/me`)}
+                                                    >
+                                                        <Copy className="w-3 h-3" />
+                                                    </Button>
+                                                </div>
+                                                <div className="flex items-center gap-2 p-2 bg-white rounded-lg border">
+                                                    <code className="flex-1 text-[10px] font-mono text-gray-600 break-all">
+                                                        {typeof window !== 'undefined' ? window.location.origin : ''}/api/v1/external/invoices
+                                                    </code>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-6 w-6 text-gray-500"
+                                                        onClick={() => copyToClipboard(`${typeof window !== 'undefined' ? window.location.origin : ''}/api/v1/external/invoices`)}
+                                                    >
+                                                        <Copy className="w-3 h-3" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-4 border border-gray-100 rounded-2xl flex flex-col justify-between">
-                                <div>
-                                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
-                                        <ExternalLink className="w-4 h-4 text-orange-600" />
-                                    </div>
-                                    <p className="font-bold text-sm">Zapier Integration</p>
-                                    <p className="text-xs text-gray-500 mt-1">Automate invoice imports from 5,000+ apps.</p>
+                        <div className="p-4 border border-primary-100 bg-primary-50 rounded-2xl">
+                            <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <ExternalLink className="w-4 h-4 text-orange-600" />
                                 </div>
-                                <a
-                                    href="https://zapier.com/apps/chaseai/integrations"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-xs text-primary-600 font-medium hover:underline justify-start mt-4 inline-block"
-                                >
-                                    View on Zapier →
-                                </a>
-                            </div>
-                            <div className="p-4 border border-gray-100 rounded-2xl flex flex-col justify-between">
                                 <div>
-                                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
-                                        <FileText className="w-4 h-4 text-blue-600" />
-                                    </div>
-                                    <p className="font-bold text-sm">API Documentation</p>
-                                    <p className="text-xs text-gray-500 mt-1">Read the guide on how to use the REST API.</p>
+                                    <p className="font-bold text-sm text-dark-900">Zapier Integration</p>
+                                    <p className="text-xs text-gray-600 mt-1">Connect ChaseAI to 5,000+ apps and automate your invoice workflow. Use your API key above to authenticate.</p>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        <strong>Need help?</strong> Contact support for setup assistance.
+                                    </p>
                                 </div>
-                                <Link
-                                    href="/docs/api"
-                                    className="text-xs text-primary-600 font-medium hover:underline justify-start mt-4 inline-block"
-                                >
-                                    Open Docs →
-                                </Link>
                             </div>
                         </div>
                     </CardContent>
