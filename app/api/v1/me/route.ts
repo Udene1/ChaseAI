@@ -26,7 +26,7 @@ export async function GET(request: Request) {
         // Verify API Key and get basic user info
         const { data: user, error } = await (supabase
             .from('users') as any)
-            .select('id, email, full_name, subscription_type')
+            .select('id, email, full_name, subscription_type, credits_balance')
             .eq('api_key', apiKey.trim()) // Ensure no whitespace
             .single();
 
@@ -38,12 +38,24 @@ export async function GET(request: Request) {
             }, { status: 401 });
         }
 
+        // 2. Billing Check (Gate)
+        const isPaidUser = ['monthly', 'early-bird', 'lifetime'].includes(user.subscription_type);
+        const hasCredits = (user.credits_balance || 0) >= 5;
+
+        if (!isPaidUser && !hasCredits) {
+            return NextResponse.json({
+                error: 'Premium Feature',
+                hint: 'Zapier integration requires an active Premium subscription or at least 5 credits.'
+            }, { status: 402 });
+        }
+
         // Return user details for Zapier "Connection Label"
         return NextResponse.json({
             id: user.id,
             email: user.email,
             name: user.full_name || 'ChaseAI User',
-            subscription: user.subscription_type
+            subscription: user.subscription_type,
+            credits: user.credits_balance
         });
 
     } catch (error) {
