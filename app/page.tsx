@@ -389,6 +389,9 @@ export default function LandingPage() {
                                             <div className="text-left">
                                                 <p className="text-[10px] uppercase tracking-wider font-bold text-gray-400">Monthly</p>
                                                 <span className="text-2xl font-black text-dark-900">{region.monthly}</span>
+                                                {region.key !== 'nigeria' && (
+                                                    <p className="text-[9px] text-gray-400 leading-tight">* Paid in NGN. Bank converts automatically.</p>
+                                                )}
                                             </div>
                                             <Link
                                                 href={`/signup?plan=${region.monthlyKey}`}
@@ -401,6 +404,9 @@ export default function LandingPage() {
                                             <div className="text-left">
                                                 <p className="text-[10px] uppercase tracking-wider font-bold text-gray-500">Lifetime</p>
                                                 <span className="text-2xl font-black text-white">{region.lifetime}</span>
+                                                {region.key !== 'nigeria' && (
+                                                    <p className="text-[9px] text-gray-500 leading-tight">* Paid in NGN. Bank converts.</p>
+                                                )}
                                             </div>
                                             <Link
                                                 href={`/signup?plan=${region.lifetimeKey}`}

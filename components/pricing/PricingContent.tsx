@@ -160,6 +160,11 @@ export default function PricingContent({ detectedRegion, countryName }: PricingC
                                         <div>
                                             <p className="text-sm font-semibold text-gray-500">Monthly Plan</p>
                                             <p className="text-3xl font-black text-dark-900">{displayRegion.monthly}</p>
+                                            {!displayRegion.isLocal && (
+                                                <p className="text-[10px] text-gray-400 mt-1 max-w-[150px] leading-tight font-medium">
+                                                    * Processed in NGN. Bank handles conversion automatically.
+                                                </p>
+                                            )}
                                         </div>
                                         <Button
                                             onClick={() => handleCheckout(displayRegion.monthlyKey)}
@@ -181,6 +186,11 @@ export default function PricingContent({ detectedRegion, countryName }: PricingC
                                         <div>
                                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Lifetime Access</p>
                                             <p className="text-3xl font-black text-white">{displayRegion.lifetime}</p>
+                                            {!displayRegion.isLocal && (
+                                                <p className="text-[10px] text-gray-400 mt-1 max-w-[150px] leading-tight font-medium">
+                                                    * One-time in NGN. Bank converts automatically.
+                                                </p>
+                                            )}
                                         </div>
                                         <button
                                             onClick={() => handleCheckout(displayRegion.lifetimeKey)}
