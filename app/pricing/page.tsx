@@ -12,17 +12,10 @@ function PricingContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const preselectedPlan = searchParams.get('plan');
-    const [isLoadingMonthly, setIsLoadingMonthly] = useState(false);
-    const [isLoadingEarlyBird, setIsLoadingEarlyBird] = useState(false);
-    const [isLoadingLifetime, setIsLoadingLifetime] = useState(false);
+    const [isLoading, setIsLoading] = useState<string | null>(null);
 
-    const handleCheckout = async (plan: 'monthly' | 'early-bird' | 'lifetime') => {
-        let setLoading;
-        if (plan === 'monthly') setLoading = setIsLoadingMonthly;
-        else if (plan === 'early-bird') setLoading = setIsLoadingEarlyBird;
-        else setLoading = setIsLoadingLifetime;
-
-        setLoading(true);
+    const handleCheckout = async (plan: string) => {
+        setIsLoading(plan);
 
         try {
             const supabase = createClient();
@@ -33,7 +26,6 @@ function PricingContent() {
                 return;
             }
 
-            // Create Paystack checkout session
             const response = await fetch('/api/paystack/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -42,11 +34,8 @@ function PricingContent() {
 
             const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to create checkout session');
-            }
+            if (!response.ok) throw new Error(data.error || 'Failed to create checkout session');
 
-            // Redirect to Paystack Authorization URL
             if (data.data?.authorization_url) {
                 window.location.href = data.data.authorization_url;
             } else {
@@ -56,9 +45,57 @@ function PricingContent() {
             console.error('Checkout error:', error);
             toast.error(error.message || 'Failed to start checkout. Please try again.');
         } finally {
-            setLoading(false);
+            setIsLoading(null);
         }
     };
+
+    const regions = [
+        {
+            name: 'Nigeria',
+            monthly: '₦2,999',
+            lifetime: '₦29,999',
+            monthlyKey: 'nigeria_monthly',
+            lifetimeKey: 'nigeria_lifetime',
+            isLocal: true,
+            features: [
+                'Unlimited invoices',
+                'AI Email Chasing',
+                'Paystack Integration',
+                'Basic Analytics',
+                'Email Support'
+            ]
+        },
+        {
+            name: 'United States',
+            monthly: '$7',
+            lifetime: '$199',
+            monthlyKey: 'usa_monthly',
+            lifetimeKey: 'usa_lifetime',
+            isGlobal: true,
+            features: [
+                'Everything in Local',
+                'Priority Support',
+                'Global Currencies',
+                'AI Historical Context',
+                'Early Alpha Features'
+            ]
+        },
+        {
+            name: 'Intl (Eur/Asia/Africa)',
+            monthly: '$5',
+            lifetime: '$149',
+            monthlyKey: 'intl_monthly',
+            lifetimeKey: 'intl_lifetime',
+            isPPP: true,
+            features: [
+                'Everything in Global',
+                'PPP Adjusted Rate',
+                'Regional Support',
+                'Custom AI Tone',
+                'Team Collaboration'
+            ]
+        }
+    ];
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -78,133 +115,74 @@ function PricingContent() {
             </header>
 
             <section className="pt-32 pb-20 px-6">
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
                         <h1 className="text-4xl md:text-5xl font-bold text-dark-900">
-                            Choose Your Plan
+                            Transparent Regional Pricing
                         </h1>
                         <p className="mt-4 text-xl text-gray-600">
-                            Simple, local pricing for Nigerian businesses.
+                            Fair access for businesses worldwide with Purchasing Power Parity.
                         </p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
-                        {/* Monthly Plan */}
-                        <div className={`bg-white rounded-2xl border-2 p-8 transition-all flex flex-col ${preselectedPlan === 'monthly' ? 'border-primary-500 shadow-xl' : 'border-gray-200 hover:shadow-xl hover:border-gray-300'}`}>
-                            <div className="text-center">
-                                <h3 className="text-2xl font-bold text-dark-900">Monthly</h3>
-                                <p className="mt-2 text-gray-500">7-day free trial</p>
-                                <div className="mt-6">
-                                    <span className="text-4xl font-bold text-dark-900">₦2,999</span>
-                                    <span className="text-gray-500">/month</span>
+                        {regions.map((region) => (
+                            <div key={region.name} className={`bg-white rounded-3xl border-2 p-8 transition-all flex flex-col ${region.isGlobal ? 'border-primary-500 shadow-2xl scale-105 z-10' : 'border-gray-100 hover:border-gray-200 shadow-sm'}`}>
+                                <div className="text-center mb-8">
+                                    <h3 className="text-2xl font-bold text-dark-900">{region.name}</h3>
+                                    {region.isPPP && <p className="text-xs text-primary-600 font-bold mt-1 uppercase tracking-wider">PPP Adjusted</p>}
                                 </div>
-                            </div>
-                            <ul className="mt-8 space-y-4 flex-grow">
-                                {[
-                                    'Unlimited invoices',
-                                    'Email & SMS reminders',
-                                    'AI personalization',
-                                    'Basic reports',
-                                    'Email support',
-                                ].map((feature, i) => (
-                                    <li key={i} className="flex items-center gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                                        <span className="text-gray-700">{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <Button
-                                className="mt-8 w-full"
-                                variant="secondary"
-                                size="lg"
-                                onClick={() => handleCheckout('monthly')}
-                                isLoading={isLoadingMonthly}
-                            >
-                                {isLoadingMonthly ? 'Processing...' : 'Start 7-Day Trial'}
-                            </Button>
-                        </div>
 
-                        {/* Early Bird Special */}
-                        <div className={`bg-white rounded-2xl border-2 p-8 transition-all relative flex flex-col ${preselectedPlan === 'early-bird' || !preselectedPlan ? 'border-primary-500 shadow-xl scale-105 z-10' : 'border-gray-200 hover:shadow-xl hover:border-gray-300'}`}>
-                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary-500 text-white text-xs font-bold px-4 py-1.5 rounded-full border-4 border-white whitespace-nowrap">
-                                LIMITED: FIRST 20 USERS
-                            </div>
-                            <div className="text-center">
-                                <h3 className="text-2xl font-bold text-dark-900">Early Bird</h3>
-                                <p className="mt-2 text-primary-600 font-medium">₦1,999 FOREVER</p>
-                                <div className="mt-6 flex items-baseline justify-center gap-2">
-                                    <span className="text-4xl font-bold text-dark-900">₦1,999</span>
-                                    <span className="text-gray-500">/month</span>
-                                </div>
-                            </div>
-                            <ul className="mt-8 space-y-4 flex-grow">
-                                {[
-                                    'Everything in Monthly',
-                                    'WhatsApp reminders',
-                                    'Founding member badge',
-                                    'Priority support',
-                                    'Price locked for life',
-                                ].map((feature, i) => (
-                                    <li key={i} className="flex items-center gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                                        <span className="text-gray-700">{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <Button
-                                className="mt-8 w-full"
-                                variant="primary"
-                                size="lg"
-                                onClick={() => handleCheckout('early-bird')}
-                                isLoading={isLoadingEarlyBird}
-                            >
-                                {isLoadingEarlyBird ? 'Processing...' : 'Claim Early Bird Spot'}
-                            </Button>
-                        </div>
+                                <div className="space-y-6 flex-grow">
+                                    {/* Monthly Option */}
+                                    <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <div>
+                                                <p className="text-sm font-semibold text-gray-500">Monthly</p>
+                                                <p className="text-3xl font-black text-dark-900">{region.monthly}</p>
+                                            </div>
+                                            <Button
+                                                onClick={() => handleCheckout(region.monthlyKey)}
+                                                isLoading={isLoading === region.monthlyKey}
+                                                size="sm"
+                                                variant={region.isGlobal ? 'primary' : 'secondary'}
+                                            >
+                                                Subscribe
+                                            </Button>
+                                        </div>
+                                    </div>
 
-                        {/* Lifetime Deal */}
-                        <div className={`bg-gradient-to-br from-primary-600 to-indigo-700 rounded-2xl p-8 text-white relative overflow-hidden shadow-xl flex flex-col ${preselectedPlan === 'lifetime' ? 'ring-4 ring-yellow-400' : ''}`}>
-                            <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                                <Star className="w-3 h-3" />
-                                BEST VALUE
-                            </div>
-                            <div className="text-center">
-                                <h3 className="text-2xl font-bold">Lifetime Access</h3>
-                                <p className="mt-2 text-primary-100">Pay once, use forever</p>
-                                <div className="mt-6">
-                                    <span className="text-4xl font-bold text-white">₦29,999</span>
-                                    <span className="text-primary-200 line-through ml-2">₦150k</span>
+                                    {/* Lifetime Option */}
+                                    <div className="p-4 rounded-2xl bg-dark-900 text-white relative overflow-hidden group">
+                                        <div className="absolute top-0 right-0 p-2">
+                                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Lifetime</p>
+                                                <p className="text-3xl font-black text-white">{region.lifetime}</p>
+                                            </div>
+                                            <button
+                                                onClick={() => handleCheckout(region.lifetimeKey)}
+                                                disabled={!!isLoading}
+                                                className="bg-white text-dark-900 px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors disabled:opacity-50"
+                                            >
+                                                {isLoading === region.lifetimeKey ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Get Forever'}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <ul className="mt-8 space-y-4 text-sm">
+                                        {region.features.map((feature, i) => (
+                                            <li key={i} className="flex items-center gap-3">
+                                                <CheckCircle2 className={`w-5 h-5 flex-shrink-0 ${region.isGlobal ? 'text-primary-500' : 'text-gray-400'}`} />
+                                                <span className="text-gray-700 font-medium">{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
                             </div>
-                            <ul className="mt-8 space-y-4 flex-grow">
-                                {[
-                                    'Everything PLUS:',
-                                    'All future updates',
-                                    'Custom domain support',
-                                    'Unlimited team members',
-                                    'Premium support',
-                                ].map((feature, i) => (
-                                    <li key={i} className="flex items-center gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-primary-300 flex-shrink-0" />
-                                        <span className="text-primary-50">{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <button
-                                onClick={() => handleCheckout('lifetime')}
-                                disabled={isLoadingLifetime}
-                                className="mt-8 bg-white text-primary-600 font-bold py-4 rounded-xl w-full flex items-center justify-center hover:bg-gray-50 transition-colors disabled:opacity-50"
-                            >
-                                {isLoadingLifetime ? (
-                                    <>
-                                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                                        Processing...
-                                    </>
-                                ) : (
-                                    'Get Lifetime Deal'
-                                )}
-                            </button>
-                        </div>
+                        ))}
                     </div>
 
                     <div className="mt-16 text-center">

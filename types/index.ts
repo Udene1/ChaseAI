@@ -33,7 +33,7 @@ export type EscalationLevel = 1 | 2 | 3;
 export type Currency = 'NGN' | 'USD' | 'EUR' | 'GBP';
 
 // Subscription types
-export type SubscriptionType = 'free' | 'monthly' | 'lifetime';
+export type SubscriptionType = 'free' | 'nigeria_monthly' | 'nigeria_lifetime' | 'usa_monthly' | 'usa_lifetime' | 'intl_monthly' | 'intl_lifetime' | 'early-bird';
 
 // Client history note structure
 export interface ClientHistoryNote {
@@ -62,6 +62,7 @@ export interface UserSettings {
     marketing_opt_in?: boolean;
     api_key?: string;
     credits_balance?: number;
+    subscription_type?: SubscriptionType;
 }
 
 // Invoice with client details

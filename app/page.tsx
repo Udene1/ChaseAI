@@ -31,6 +31,7 @@ export default function LandingPage() {
                                 alt="ChaseAI Logo"
                                 fill
                                 className="object-cover"
+                                priority
                             />
                         </div>
                         <span className="text-xl font-bold gradient-text">ChaseAI</span>
@@ -336,47 +337,73 @@ export default function LandingPage() {
                     <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         {[
                             {
-                                name: 'Monthly',
-                                price: '₦2,999',
-                                sub: '/ month',
-                                features: ['Unlimited Invoices', 'AI Email Chasing', 'Paystack Integration', 'Standard Analytics'],
-                                button: 'Start Free Trial',
+                                name: 'Local (Nigeria)',
+                                monthly: '₦2,999',
+                                lifetime: '₦29,999',
+                                monthlyKey: 'nigeria_monthly',
+                                lifetimeKey: 'nigeria_lifetime',
+                                features: ['Unlimited Invoices', 'AI Email Chasing', 'Paystack Integrated', 'Basic Analytics'],
                                 type: 'secondary'
                             },
                             {
-                                name: 'Early Bird',
-                                price: '₦1,999',
-                                sub: '/ month',
-                                tag: 'Limited: First 20 Users',
-                                features: ['Everything in Monthly', 'WhatsApp Reminders', 'SMS Support', 'Priority Support', 'Lifetime Price Lock'],
-                                button: 'Secure Spot Now',
+                                name: 'United States',
+                                monthly: '$7',
+                                lifetime: '$199',
+                                monthlyKey: 'usa_monthly',
+                                lifetimeKey: 'usa_lifetime',
+                                tag: 'Global Access',
+                                features: ['Everything in Local', 'Priority Support', 'Global Currencies', 'AI Context Memory'],
                                 type: 'primary',
                                 popular: true
                             },
                             {
-                                name: 'Lifetime',
-                                price: '₦29,999',
-                                sub: 'one-time',
-                                features: ['Founder Access Forever', 'All Future AI Models', 'Unlimited Team Seats', 'Custom Domain Support'],
-                                button: 'Get Lifetime Access',
-                                type: 'dark'
+                                name: 'International (PPP)',
+                                monthly: '$5',
+                                lifetime: '$149',
+                                monthlyKey: 'intl_monthly',
+                                lifetimeKey: 'intl_lifetime',
+                                tag: 'Fair Access',
+                                features: ['Everything in Global', 'Eur/Asia/Africa Rate', 'Regional Support', 'Custom AI Tone'],
+                                type: 'secondary'
                             }
-                        ].map((plan, i) => (
-                            <div key={i} className={`relative flex flex-col p-10 rounded-[40px] border transition-all duration-500 ${plan.popular ? 'bg-white border-primary-200 shadow-2xl shadow-primary-500/10 scale-105 z-10' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-xl'}`}>
-                                {plan.tag && (
-                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full shadow-lg">
-                                        {plan.tag}
+                        ].map((region, i) => (
+                            <div key={i} className={`relative flex flex-col p-8 rounded-[40px] border transition-all duration-500 ${region.popular ? 'bg-white border-primary-200 shadow-2xl shadow-primary-500/10 scale-105 z-10' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-xl'}`}>
+                                {region.tag && (
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full shadow-lg whitespace-nowrap">
+                                        {region.tag}
                                     </div>
                                 )}
-                                <div className="mb-8">
-                                    <h3 className="text-xl font-bold text-dark-900 mb-2">{plan.name}</h3>
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-4xl font-black text-dark-900">{plan.price}</span>
-                                        <span className="text-gray-400 text-sm font-medium">{plan.sub}</span>
+                                <div className="mb-6 text-center">
+                                    <h3 className="text-xl font-bold text-dark-900 mb-4">{region.name}</h3>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                                            <div className="text-left">
+                                                <p className="text-[10px] uppercase tracking-wider font-bold text-gray-400">Monthly</p>
+                                                <span className="text-2xl font-black text-dark-900">{region.monthly}</span>
+                                            </div>
+                                            <Link
+                                                href={`/signup?plan=${region.monthlyKey}`}
+                                                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${region.popular ? 'bg-primary-600 text-white' : 'bg-white border border-gray-200 text-dark-900'}`}
+                                            >
+                                                Start
+                                            </Link>
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 bg-dark-900 rounded-2xl border border-dark-800 shadow-xl">
+                                            <div className="text-left">
+                                                <p className="text-[10px] uppercase tracking-wider font-bold text-gray-500">Lifetime</p>
+                                                <span className="text-2xl font-black text-white">{region.lifetime}</span>
+                                            </div>
+                                            <Link
+                                                href={`/signup?plan=${region.lifetimeKey}`}
+                                                className="px-4 py-2 rounded-xl text-xs font-bold bg-white text-dark-900 hover:bg-gray-100 transition-all"
+                                            >
+                                                Buy
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
-                                <ul className="space-y-4 mb-10 flex-grow">
-                                    {plan.features.map((f, j) => (
+                                <ul className="space-y-3 mb-8 flex-grow">
+                                    {region.features.map((f, j) => (
                                         <li key={j} className="flex items-center gap-3 text-sm font-semibold text-gray-600">
                                             <div className="w-5 h-5 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
                                                 <CheckCircle2 className="w-3 h-3 text-primary-600" />
@@ -386,15 +413,10 @@ export default function LandingPage() {
                                     ))}
                                 </ul>
                                 <Link
-                                    href={`/signup?plan=${plan.name.toLowerCase().replace(' ', '-')}`}
-                                    className={`w-full py-4 rounded-2xl text-sm font-bold transition-all duration-300 text-center ${plan.type === 'primary'
-                                        ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/25 hover:bg-primary-700'
-                                        : plan.type === 'dark'
-                                            ? 'bg-dark-900 text-white hover:bg-black shadow-lg shadow-dark-900/20'
-                                            : 'bg-gray-50 text-dark-900 hover:bg-gray-100 border border-gray-100'
-                                        }`}
+                                    href="/pricing"
+                                    className="text-center text-xs font-bold text-primary-600 hover:underline"
                                 >
-                                    {plan.button}
+                                    View full plan details
                                 </Link>
                             </div>
                         ))}

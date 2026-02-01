@@ -16,15 +16,21 @@ export async function POST(req: Request) {
         let amount = 0;
         let planCode = '';
 
-        if (plan === 'monthly') {
+        if (plan === 'nigeria_monthly') {
             amount = 2999;
-            planCode = process.env.PAYSTACK_MONTHLY_PLAN_CODE!;
-        } else if (plan === 'early-bird') {
-            amount = 1999;
-            planCode = process.env.PAYSTACK_EARLY_BIRD_PLAN_CODE!;
-        } else if (plan === 'lifetime') {
+            planCode = process.env.PAYSTACK_NG_MONTHLY_PLAN_CODE || process.env.PAYSTACK_MONTHLY_PLAN_CODE!;
+        } else if (plan === 'nigeria_lifetime') {
             amount = 29999;
-            // Lifetime doesn't need a plan code as it's a one-time payment
+        } else if (plan === 'usa_monthly') {
+            amount = 11200; // $7 @ 1600
+            planCode = process.env.PAYSTACK_US_MONTHLY_PLAN_CODE || process.env.PAYSTACK_GLOBAL_PLAN_CODE!;
+        } else if (plan === 'usa_lifetime') {
+            amount = 318400; // $199 @ 1600
+        } else if (plan === 'intl_monthly') {
+            amount = 8000; // $5 @ 1600
+            planCode = process.env.PAYSTACK_INTL_MONTHLY_PLAN_CODE || process.env.PAYSTACK_ASIA_PLAN_CODE!;
+        } else if (plan === 'intl_lifetime') {
+            amount = 238400; // $149 @ 1600
         } else {
             return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
         }

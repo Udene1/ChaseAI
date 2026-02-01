@@ -39,7 +39,12 @@ export async function GET(request: Request) {
         }
 
         // 2. Billing Check (Gate)
-        const isPaidUser = ['monthly', 'early-bird', 'lifetime'].includes(user.subscription_type);
+        const isPaidUser = [
+            'nigeria_monthly', 'nigeria_lifetime',
+            'usa_monthly', 'usa_lifetime',
+            'intl_monthly', 'intl_lifetime',
+            'early-bird', 'monthly', 'lifetime'
+        ].includes(user.subscription_type as string);
         const hasCredits = (user.credits_balance || 0) >= 5;
 
         if (!isPaidUser && !hasCredits) {

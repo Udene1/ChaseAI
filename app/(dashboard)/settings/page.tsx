@@ -167,13 +167,17 @@ export default function SettingsPage() {
                         <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                             <div>
                                 <p className="font-semibold text-dark-900 capitalize">
-                                    {user?.subscription_type === 'lifetime'
-                                        ? '🎉 Lifetime Deal'
-                                        : user?.subscription_type === 'early-bird'
-                                            ? 'Early Bird Plan'
-                                            : user?.subscription_type === 'monthly'
-                                                ? 'Monthly Plan'
-                                                : 'Free Plan'}
+                                    {(() => {
+                                        const type = user?.subscription_type as any;
+                                        if (type === 'lifetime' || type === 'nigeria_lifetime') return '🎉 Lifetime Access (NG)';
+                                        if (type === 'usa_lifetime') return '🎉 Lifetime Access (US)';
+                                        if (type === 'intl_lifetime') return '🎉 Lifetime Access (INTL)';
+                                        if (type === 'nigeria_monthly' || type === 'monthly') return 'Monthly Plan (NG)';
+                                        if (type === 'usa_monthly') return 'Monthly Plan (US)';
+                                        if (type === 'intl_monthly') return 'Monthly Plan (INTL)';
+                                        if (type === 'early-bird') return 'Early Bird Plan';
+                                        return 'Free Plan';
+                                    })()}
                                 </p>
                                 <p className="text-sm text-gray-500">
                                     {user?.subscription_status === 'active'

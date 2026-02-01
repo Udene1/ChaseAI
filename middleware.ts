@@ -8,6 +8,10 @@ export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Allow public routes
+    if (pathname === '/') {
+        return NextResponse.next();
+    }
+
     if (publicRoutes.some((route) => pathname === route || pathname.startsWith(route))) {
         return await updateSession(request);
     }
