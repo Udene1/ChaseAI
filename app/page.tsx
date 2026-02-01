@@ -11,6 +11,8 @@ import {
     CheckCircle2,
     Star,
 } from 'lucide-react';
+import { headers } from 'next/headers';
+import { getRegionByCountry } from '@/lib/geo';
 
 export default function LandingPage() {
     return (
@@ -334,9 +336,10 @@ export default function LandingPage() {
                         <p className="mt-6 text-xl text-gray-500">Start with a 7-day trial. Cancel anytime.</p>
                     </div>
 
-                    <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div className="grid lg:grid-cols-1 gap-8 max-w-lg mx-auto">
                         {[
                             {
+                                key: 'nigeria',
                                 name: 'Local (Nigeria)',
                                 monthly: '₦2,999',
                                 lifetime: '₦29,999',
@@ -346,6 +349,7 @@ export default function LandingPage() {
                                 type: 'secondary'
                             },
                             {
+                                key: 'usa',
                                 name: 'United States',
                                 monthly: '$7',
                                 lifetime: '$199',
@@ -357,6 +361,7 @@ export default function LandingPage() {
                                 popular: true
                             },
                             {
+                                key: 'intl',
                                 name: 'International (PPP)',
                                 monthly: '$5',
                                 lifetime: '$149',
@@ -366,8 +371,12 @@ export default function LandingPage() {
                                 features: ['Everything in Global', 'Eur/Asia/Africa Rate', 'Regional Support', 'Custom AI Tone'],
                                 type: 'secondary'
                             }
-                        ].map((region, i) => (
-                            <div key={i} className={`relative flex flex-col p-8 rounded-[40px] border transition-all duration-500 ${region.popular ? 'bg-white border-primary-200 shadow-2xl shadow-primary-500/10 scale-105 z-10' : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-xl'}`}>
+                        ].filter(r => {
+                            const countryCode = headers().get('x-vercel-ip-country') || 'US';
+                            const region = getRegionByCountry(countryCode);
+                            return r.key === region;
+                        }).map((region, i) => (
+                            <div key={i} className={`relative flex flex-col p-8 rounded-[40px] border transition-all duration-500 bg-white border-primary-200 shadow-2xl shadow-primary-500/10 z-10 hover:shadow-xl`}>
                                 {region.tag && (
                                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full shadow-lg whitespace-nowrap">
                                         {region.tag}
