@@ -1,6 +1,7 @@
 'use client';
 
 import { Header } from '@/components/layout/header';
+import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -122,7 +123,7 @@ print(response.json())`
                                 <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-100 rounded-xl">
                                     <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                                     <p className="text-sm text-blue-700">
-                                        You can generate your API Key in the **Settings** page. Never share your key or expose it in client-side code.
+                                        You can generate your API Key in the <Link href="/settings" className="font-bold underline">Settings</Link> page. Never share your key or expose it in client-side code.
                                     </p>
                                 </div>
                             </CardContent>
@@ -212,8 +213,8 @@ print(response.json())`
                                             key={tab}
                                             onClick={() => setActiveTab(tab)}
                                             className={`px-4 py-3 text-xs font-bold transition-all uppercase tracking-widest ${activeTab === tab
-                                                    ? 'bg-primary-500 text-white'
-                                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                                ? 'bg-primary-500 text-white'
+                                                : 'text-gray-400 hover:text-white hover:bg-white/5'
                                                 }`}
                                         >
                                             {tab === 'js' ? 'JavaScript' : tab}
@@ -282,6 +283,24 @@ print(response.json())`
                         </section>
                     </div>
                 </div>
+
+                {/* Footer Section */}
+                <footer className="mt-20 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-6">
+                        <Link href="/settings" className="text-sm font-bold text-gray-500 hover:text-primary-600 transition-colors">
+                            Settings
+                        </Link>
+                        <Link href="/dashboard" className="text-sm font-bold text-gray-500 hover:text-primary-600 transition-colors">
+                            Dashboard
+                        </Link>
+                        <a href="mailto:support@verimut.icu" className="text-sm font-bold text-gray-500 hover:text-primary-600 transition-colors">
+                            Support
+                        </a>
+                    </div>
+                    <p className="text-xs font-medium text-gray-400">
+                        © 2026 ChaseAI Connect. All rights reserved.
+                    </p>
+                </footer>
             </div>
         </>
     );
