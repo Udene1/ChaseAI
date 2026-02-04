@@ -13,6 +13,7 @@ import {
     LogOut,
     Plus,
     X,
+    BookOpen,
 } from 'lucide-react';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
@@ -108,7 +109,15 @@ export function Sidebar() {
                 </nav>
 
                 {/* Footer */}
-                <div className="p-4 border-t border-gray-100">
+                <div className="p-4 border-t border-gray-100 space-y-2">
+                    <Link
+                        href="/docs/api"
+                        className="sidebar-link w-full text-primary-600 hover:bg-primary-50 hover:text-primary-700"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        <BookOpen className="w-5 h-5" />
+                        API Docs
+                    </Link>
                     <button
                         onClick={handleSignOut}
                         className="sidebar-link w-full text-red-600 hover:bg-red-50 hover:text-red-700"

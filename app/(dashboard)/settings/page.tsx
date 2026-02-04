@@ -454,6 +454,17 @@ export default function SettingsPage() {
                                 </div>
                             </div>
                         </div>
+
+                        <div className="pt-4">
+                            <Button
+                                variant="outline"
+                                className="w-full"
+                                onClick={() => router.push('/docs/api')}
+                            >
+                                <FileText className="w-4 h-4 mr-2" />
+                                View Full API Documentation
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
 
