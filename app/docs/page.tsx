@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import {
     Book,
     Code2,
@@ -83,8 +84,14 @@ print(response.json())`
             <header className="bg-white border-b border-gray-100 py-6 sticky top-0 z-50 backdrop-blur-md bg-white/80">
                 <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-10 h-10 bg-dark-900 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <Zap className="w-5 h-5 text-white fill-white" />
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/10 overflow-hidden relative border border-gray-100 group-hover:scale-105 transition-transform">
+                            <Image
+                                src="/logo.png"
+                                alt="ChaseAI Logo"
+                                fill
+                                className="object-cover"
+                                priority
+                            />
                         </div>
                         <span className="text-2xl font-black text-dark-900 tracking-tighter">ChaseAI <span className="text-primary-600">Docs</span></span>
                     </Link>
@@ -193,7 +200,7 @@ print(response.json())`
                             <h2 className="text-3xl font-black">Smart Chasing AI 🧠</h2>
                             <p className="text-gray-400 text-lg leading-relaxed max-w-2xl font-medium">
                                 How it works: Our hybrid AI system combines the linguistic power of **Groq/OpenAI**
-                                with a custom **behavioral ML model** hosted on Railway.
+                                with a custom **behavioral ML model**.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
                                 <div className="space-y-4 p-6 bg-white/5 rounded-3xl border border-white/10">
@@ -367,7 +374,7 @@ print(response.json())`
                         {/* Final Support CTA */}
                         <div className="p-12 glass-card rounded-[40px] text-center border-primary-100 mt-20">
                             <h3 className="text-2xl font-black text-dark-900 mb-4">Still have questions?</h3>
-                            <p className="text-gray-500 font-medium mb-8">Our support team in Lagos is ready to help you recover your first 1M NGN.</p>
+                            <p className="text-gray-500 font-medium mb-8">Our support team is ready to help you recover your first 1M NGN.</p>
                             <a href="mailto:support@verimut.icu" className="inline-flex items-center gap-2 px-8 py-4 bg-dark-900 text-white rounded-2xl font-bold hover:scale-105 transition-all">
                                 <MessageSquare className="w-5 h-5" />
                                 support@verimut.icu
