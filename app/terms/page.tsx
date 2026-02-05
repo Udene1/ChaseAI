@@ -21,57 +21,69 @@ export default function TermsOfService() {
                         <h1 className="text-4xl font-extrabold text-gray-900">Terms of Service</h1>
                     </div>
 
-                    <p className="text-gray-500 mb-12 font-medium">Last Updated: January 29, 2026</p>
+                    <p className="text-gray-500 mb-12 font-medium">Last Updated: February 05, 2026</p>
 
                     <div className="prose prose-slate max-w-none space-y-12 text-gray-600 leading-relaxed">
+                        <p className="text-lg">
+                            These Terms apply to all users of ChaseAI, regardless of location. By using the service, you agree to these terms and our Privacy Policy.
+                        </p>
+
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
-                            <p>By accessing or using ChaseAI, you agree to be bound by these Terms of Service and all applicable laws and regulations in Nigeria. If you do not agree with any of these terms, you are prohibited from using the Service.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Eligibility & Accounts</h2>
+                            <p>You must be 18+ (or legal age in your country) and provide accurate info. US users: No use if under COPPA age without consent.</p>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Description of Service</h2>
-                            <p>ChaseAI provides an AI-powered automated invoice chasing assistant that sends reminders to your clients for outstanding payments. Our Service integrates with third-party providers including Paystack for payment processing.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Services & Subscriptions</h2>
+                            <ul className="list-disc pl-6 space-y-2 mt-4">
+                                <li><strong>Access:</strong> Global, but features may vary (e.g., NGN focus).</li>
+                                <li><strong>Payments:</strong> Via Stripe (US-based); no refunds except as required (e.g., CCPA rights).</li>
+                                <li><strong>AI Features:</strong> Reminders use hybrid LLM/ML; results not guaranteed.</li>
+                            </ul>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. AI Responsibility Disclaimer</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Acceptable Use</h2>
+                            <p>No illegal activities, spam, or misuse (e.g., fraudulent invoices). Comply with export laws (e.g., US ITAR if applicable).</p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">4. User Content & IP</h2>
+                            <p>You own your data; grant us license to process for services. We own platform IP.</p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Limitation of Liability</h2>
                             <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 flex gap-4 items-start">
                                 <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-1" />
                                 <p className="text-sm text-amber-900 font-medium">
-                                    ChaseAI uses Artificial Intelligence to generate communication. While we strive for professional and accurate messaging, the <strong>User is ultimately responsible</strong> for the content of messages sent through our platform and the maintenance of their client relationships.
+                                    &quot;As is&quot; service. No liability for indirect damages, lost profits (capped at fees paid last 12 months). US users: No class actions; individual arbitration only (AAA rules).
                                 </p>
                             </div>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Subscriptions and Payments</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Termination</h2>
+                            <p>We may suspend for violations; you can cancel anytime.</p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Governing Law & Disputes</h2>
                             <ul className="list-disc pl-6 space-y-2 mt-4">
-                                <li><strong>7-Day Free Trial:</strong> New users are eligible for a 7-day trial. After the trial, your chosen plan will be billed automatically via Paystack.</li>
-                                <li><strong>Cancellations:</strong> You may cancel your subscription at any time. Your access will continue until the end of the current billing cycle.</li>
-                                <li><strong>Non-Refundable:</strong> Unless required by law, subscription fees are non-refundable.</li>
+                                <li>Nigeria law for NG users; California law for US users; applicable local law elsewhere.</li>
+                                <li>Disputes: Arbitration in Lagos (NG) or San Francisco (US); courts for small claims.</li>
                             </ul>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Acceptable Use</h2>
-                            <p>You agree not to use ChaseAI to:</p>
-                            <ul className="list-disc pl-6 space-y-2 mt-4">
-                                <li>Harass clients or use abusive language.</li>
-                                <li>Engage in illegal debt collection practices.</li>
-                                <li>Send spam or unauthorized commercial communications.</li>
-                            </ul>
-                        </section>
-
-                        <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Governing Law</h2>
-                            <p>These terms are governed by and construed in accordance with the laws of the <strong>Federal Republic of Nigeria</strong>, and you irrevocably submit to the exclusive jurisdiction of the courts in that location.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">8. International Users</h2>
+                            <p>Service available globally, but you must comply with local laws (e.g., GDPR export restrictions).</p>
                         </section>
 
                         <section className="pt-8 border-t border-gray-100">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact</h2>
-                            <p>For legal inquiries, please contact:</p>
-                            <p className="font-bold text-indigo-600 mt-2">support@verimut.icu</p>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">9. Changes</h2>
+                            <p>We notify via email/site. Continued use = acceptance. Questions?</p>
+                            <p className="font-bold text-primary-600 mt-2">support@verimut.icu</p>
                         </section>
                     </div>
                 </div>

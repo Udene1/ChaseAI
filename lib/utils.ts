@@ -1,12 +1,24 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Currency } from '@/types';
+import { createHash } from 'crypto';
 
 /**
  * Merge Tailwind CSS classes with clsx
  */
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
+}
+
+/**
+ * Hashes a sensitive ID (like client_id) for data privacy.
+ * Uses SHA-256 with an optional salt from environment variables.
+ */
+export function hashClientId(clientId: string): string {
+    const salt = process.env.AI_DYNAMO_SALT || 'chase_default_salt';
+    return createHash('sha256')
+        .update(clientId + salt)
+        .digest('hex');
 }
 
 /**

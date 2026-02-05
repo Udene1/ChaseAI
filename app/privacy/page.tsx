@@ -21,58 +21,85 @@ export default function PrivacyPolicy() {
                         <h1 className="text-4xl font-extrabold text-gray-900">Privacy Policy</h1>
                     </div>
 
-                    <p className="text-gray-500 mb-12 font-medium">Last Updated: January 29, 2026</p>
+                    <p className="text-gray-500 mb-12 font-medium">Last Updated: February 05, 2026</p>
 
                     <div className="prose prose-slate max-w-none space-y-12 text-gray-600 leading-relaxed">
+                        <p className="text-lg">
+                            ChaseAI (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is a global SaaS platform for accounts receivable management, accessible worldwide. We prioritize your privacy and comply with key laws, including Nigeria&apos;s NDPA 2023, California&apos;s CCPA/CPRA, EU GDPR (where applicable), and equivalents in other jurisdictions.
+                        </p>
+
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Information We Collect</h2>
-                            <p>To provide ChaseAI&apos;s invoice chasing services, we collect several types of information from and about users of our Service, including:</p>
+                            <p>We collect:</p>
                             <ul className="list-disc pl-6 space-y-2 mt-4">
-                                <li><strong>Account Information:</strong> Name, email address, and company details provided during registration.</li>
-                                <li><strong>Invoice Data:</strong> Details of the invoices you upload or sync, including client names, email addresses, payment due dates, and amounts.</li>
-                                <li><strong>Payment Metadata:</strong> Transaction statuses via Paystack (ChaseAI does not store your credit card details).</li>
+                                <li><strong>Personal Information:</strong> Email, phone, business name (for auth/reminders). [US CCPA Category: Identifiers]</li>
+                                <li><strong>Financial/Invoice Data:</strong> Amounts, descriptions, due dates, client details (anonymized/hashed for AI processing). [US CCPA Category: Commercial information]</li>
+                                <li><strong>Sensitive Data:</strong> None directly (e.g., no health/racial data), but inferred from invoices (handled securely). [US CCPA: Sensitive personal info – opt-out available]</li>
+                                <li><strong>Usage Data:</strong> Login times, interactions, IP addresses (for security). [US CCPA Category: Internet activity]</li>
+                                <li><strong>No Children&apos;s Data:</strong> We do not knowingly collect data from under-13s (US COPPA compliance).</li>
                             </ul>
+                            <p className="mt-4 italic">Sources: Directly from you (sign-up/invoices), automatically (logs), or third parties (Stripe for payments).</p>
                         </section>
 
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">2. How We Use Your Information</h2>
-                            <p>We use the information we collect to:</p>
                             <ul className="list-disc pl-6 space-y-2 mt-4">
-                                <li>Generate and send personalized payment reminders to your clients.</li>
-                                <li>Analyze payment behaviors to improve our &quot;Smart Chasing&quot; AI engine.</li>
-                                <li>Communicate with you regarding your account and service updates.</li>
-                                <li>Comply with regulatory requirements in Nigeria.</li>
+                                <li><strong>Core services:</strong> Invoice creation, AI-personalized reminders (via LLM like Groq/OpenAI).</li>
+                                <li><strong>Analytics:</strong> Improve predictions (anonymized data to separate microservice).</li>
+                                <li><strong>Legal basis:</strong> Consent (marketing), contract (services), legitimate interests (fraud prevention).</li>
+                                <li><strong>Automated decisions:</strong> AI models use your data for risk/timing predictions; you can request human review.</li>
                             </ul>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. AI Processing and Data Security</h2>
-                            <div className="bg-primary-50 border border-primary-100 rounded-2xl p-6 flex gap-4 items-start">
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Sharing & Disclosures</h2>
+                            <ul className="list-disc pl-6 space-y-2 mt-4">
+                                <li><strong>Third parties:</strong> Supabase (hosting – US/EU servers), Twilio/Resend (messaging – global), Stripe (payments – US), Groq/OpenAI (AI – US).</li>
+                                <li><strong>No selling/sharing for ads:</strong> [US CCPA: We do not &quot;sell&quot; or &quot;share&quot; personal info as defined; opt-out link below.]</li>
+                                <li><strong>Cross-border transfers:</strong> Data may go to US/EU (e.g., AI providers). We use Standard Contractual Clauses (SCCs) or equivalents for adequacy.</li>
+                            </ul>
+                            <div className="bg-primary-50 border border-primary-100 rounded-2xl p-6 flex gap-4 items-start mt-6">
                                 <Lock className="w-6 h-6 text-primary-600 flex-shrink-0 mt-1" />
                                 <p className="text-sm text-primary-900 font-medium">
-                                    Your data is processed by our AI engine (using partners like Groq) to craft personalized messages. We ensure that our AI partners do not use your data for their own training purposes outside of your specific service needs.
+                                    In the last 12 months (US CCPA disclosure): We disclosed identifiers/commercial info to service providers for business purposes.
                                 </p>
                             </div>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Sharing of Information</h2>
-                            <p>We do not sell your personal or client data. We share information only with:</p>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Your Privacy Rights</h2>
                             <ul className="list-disc pl-6 space-y-2 mt-4">
-                                <li><strong>Service Providers:</strong> Resend (for emails), Paystack (for payments), and Groq (for AI processing).</li>
-                                <li><strong>Legal Compliance:</strong> When required by Nigerian law or to protect our rights.</li>
+                                <li><strong>Global:</strong> Access, correct, delete data; object to processing; withdraw consent.</li>
+                                <li><strong>US CCPA/CPRA:</strong> Right to know (categories/sources), delete, opt-out of sales/sharing, limit sensitive data use. Non-discrimination for exercising rights.</li>
+                                <li><strong>EU GDPR (if applicable):</strong> Portability, automated decision explanations.</li>
+                                <li><strong>Exercise rights:</strong> Email <span className="font-bold text-primary-600">privacy@yourdomain.com</span> (response within 45 days, extendable).</li>
                             </ul>
+                            <p className="mt-4">Opt-out of &quot;sales/sharing&quot; (US): [Link to opt-out form or email].</p>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Your Rights (NDPR)</h2>
-                            <p>In accordance with the <strong>Nigeria Data Protection Regulation (NDPR)</strong>, you have the right to access, correct, or delete your personal data. To exercise these rights, please contact us at the address below.</p>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">5. Security</h2>
+                            <div className="bg-white border border-gray-100 rounded-2xl p-6 flex gap-4 items-start">
+                                <Shield className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                                <p>Encryption (AES-256), access controls (Supabase RLS), hashing for AI data, regular audits. We report breaches per NDPA/CCPA timelines.</p>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">6. Retention & Deletion</h2>
+                            <p>Data retained for service needs + legal (e.g., 7 years for financials). Delete on request unless required by law.</p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">7. Cookies & Tracking</h2>
+                            <p>We use essential cookies only (no tracking pixels yet). Opt-out via browser settings.</p>
                         </section>
 
                         <section className="pt-8 border-t border-gray-100">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact Us</h2>
-                            <p>If you have questions about this Privacy Policy, please contact us at:</p>
-                            <p className="font-bold text-primary-600 mt-2">support@verimut.icu</p>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Changes & Contact</h2>
+                            <p>We notify of material changes. Questions? Email us at:</p>
+                            <p className="font-bold text-primary-600 mt-2">privacy@yourdomain.com</p>
+                            <p className="mt-4 text-sm italic">You may also contact NDPC (Nigeria) or CA AG (US CCPA complaints).</p>
                         </section>
                     </div>
                 </div>
@@ -80,7 +107,7 @@ export default function PrivacyPolicy() {
 
             <footer className="bg-white border-t border-gray-100 py-12">
                 <div className="max-w-4xl mx-auto px-6 text-center text-sm text-gray-400 font-medium">
-                    © 2026 ChaseAI. All rights reserved. Built for the future of work in Africa.
+                    © 2026 ChaseAI. All rights reserved. Built for the future of work.
                 </div>
             </footer>
         </div>

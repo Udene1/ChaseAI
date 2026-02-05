@@ -459,7 +459,7 @@ export default function SettingsPage() {
                             <Button
                                 variant="outline"
                                 className="w-full"
-                                onClick={() => router.push('/docs/api')}
+                                onClick={() => router.push('/docs#api-connect')}
                             >
                                 <FileText className="w-4 h-4 mr-2" />
                                 View Full API Documentation

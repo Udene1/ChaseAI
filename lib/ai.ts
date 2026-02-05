@@ -2,7 +2,58 @@ import Groq from 'groq-sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import OpenAI from 'openai';
 import { Invoice, Client, EscalationLevel, AIReminderResponse, ClientHistoryNote } from '@/types';
-import { formatCurrency, formatDate } from './utils';
+import { formatCurrency, formatDate, hashClientId } from './utils';
+
+// --- AI Microservice Integration ---
+const AI_SERVICE_URL = process.env.AI_API_URL?.replace(/\/$/, '') || 'https://web-production-2893d.up.railway.app';
+const AI_API_KEY = process.env.AI_API_KEY;
+
+type AISignalResponse = {
+    risk_score?: number; // 0–1
+    predicted_days_overdue?: number;
+    confidence?: number;
+    best_hour?: number; // 0–23
+    best_channel?: 'email' | 'sms' | 'whatsapp';
+    industry?: string;
+};
+
+async function fetchAIService<T>(endpoint: string, body?: any): Promise<T> {
+    if (!AI_API_KEY) {
+        console.warn(`AI Service skipped: AI_API_KEY not set for ${endpoint}`);
+        return {} as T;
+    }
+
+    try {
+        const res = await fetch(`${AI_SERVICE_URL}${endpoint}`, {
+            method: body ? 'POST' : 'GET',
+            headers: {
+                Authorization: `Bearer ${AI_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: body ? JSON.stringify(body) : undefined,
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return await res.json();
+    } catch (err) {
+        console.error(`AI service ${endpoint} failed:`, err);
+        return {} as T; // graceful fallback
+    }
+}
+
+// Helper methods for signals
+export async function predictBehavior(clientId: string, amount: number): Promise<AISignalResponse> {
+    const hashedId = hashClientId(clientId);
+    return fetchAIService<AISignalResponse>('/api/predict-behavior', { client_id: hashedId, amount });
+}
+
+export async function optimizeTiming(clientId: string): Promise<AISignalResponse> {
+    const hashedId = hashClientId(clientId);
+    return fetchAIService<AISignalResponse>('/api/optimize-timing', { client_id: hashedId });
+}
+
+export async function extractIndustry(description: string): Promise<{ industry: string }> {
+    return fetchAIService<{ industry: string }>('/api/extract-industry', { description });
+}
 
 /**
  * Get AI client based on provider preference
@@ -117,7 +168,33 @@ export async function generateReminder(
     const context = getEscalationContext(escalationLevel);
     const historyContext = buildHistoryContext(client);
 
+    // --- ENRICHMENT: Fetch ML Signals ---
+    let mlSignalsContent = '';
+    try {
+        const [behavior, timing, industryRes] = await Promise.all([
+            client ? predictBehavior(client.id, invoice.amount) : Promise.resolve({} as AISignalResponse),
+            client ? optimizeTiming(client.id) : Promise.resolve({} as AISignalResponse),
+            invoice.description ? extractIndustry(invoice.description) : Promise.resolve({ industry: 'General' }),
+        ]);
+
+        const riskLevel = (behavior.risk_score || 0.5) > 0.7 ? 'High' : (behavior.risk_score || 0.5) > 0.4 ? 'Medium' : 'Low';
+        const bestTime = timing.best_hour !== undefined ? `${timing.best_hour}:00` : '09:00';
+
+        mlSignalsContent = `
+ML SIGNALS (Structured Context):
+- Predicted Risk: ${riskLevel} (${Math.round((behavior.risk_score || 0.5) * 100)}% late probability)
+- Best Time: ${bestTime} WAT
+- Best Channel: ${timing.best_channel || 'Email'}
+- Inferred Industry: ${industryRes.industry || 'General'}
+- Predicted Delay: ${behavior.predicted_days_overdue || 'N/A'} days
+`;
+    } catch (e) {
+        console.warn('ML enrichment failed, fallback to standard LLM prompt');
+    }
+
     const prompt = `You are an AI assistant helping a freelancer/business owner send payment reminders. Generate a personalized reminder email for an overdue invoice.
+
+${mlSignalsContent}
 
 INVOICE DETAILS:
 - Invoice Number: ${invoice.invoice_number}
