@@ -233,10 +233,10 @@ print(response.json())`
                                 </div>
                                 <div className="space-y-4">
                                     <h4 className="text-dark-900 font-bold flex items-center gap-2">
-                                        <Zap className="w-4 h-4 text-primary-500" /> The "Secret Salt"
+                                        <Zap className="w-4 h-4 text-primary-500" /> The &quot;Secret Salt&quot;
                                     </h4>
                                     <p className="text-sm">
-                                        To prevent "rainbow table" attacks, we combine your Client IDs with a unique <strong>Environment Salt</strong> kept securely in your private server. This ensures that even if two different businesses have the same client, their hashes will be completely different.
+                                        To prevent &quot;rainbow table&quot; attacks, we combine your Client IDs with a unique <strong>Environment Salt</strong> kept securely in your private server. This ensures that even if two different businesses have the same client, their hashes will be completely different.
                                     </p>
                                 </div>
                             </div>
@@ -246,7 +246,7 @@ print(response.json())`
                                     <Globe className="w-5 h-5" /> Global Compliance
                                 </h4>
                                 <p className="text-sm text-primary-800">
-                                    Our architecture is designed to exceed the requirements of <strong>Nigeria's NDPA</strong>, <strong>Europe's GDPR</strong>, and <strong>California's CCPA</strong>. By never storing PII (Personally Identifiable Information) in our prediction engine, we eliminate the primary risk associated with AI data processing.
+                                    Our architecture is designed to exceed the requirements of <strong>Nigeria&apos;s NDPA</strong>, <strong>Europe&apos;s GDPR</strong>, and <strong>California&apos;s CCPA</strong>. By never storing PII (Personally Identifiable Information) in our prediction engine, we eliminate the primary risk associated with AI data processing.
                                 </p>
                             </div>
                         </div>
