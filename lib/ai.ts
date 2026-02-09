@@ -168,8 +168,11 @@ export async function generateReminder(
     const context = getEscalationContext(escalationLevel);
     const historyContext = buildHistoryContext(client);
 
-    // --- ENRICHMENT: Fetch ML Signals ---
+    // --- ENRICHMENT: Fetch ML Signals from Microservice ---
     let mlSignalsContent = '';
+    let provenPhrasesContent = '';  // NEW: Store proven phrases
+    let riskScore = 0.5;             // NEW: Track risk score for logging
+    let industry = 'General';        // NEW: Track industry for logging
     try {
         const [behavior, timing, industryRes] = await Promise.all([
             client ? predictBehavior(client.id, invoice.amount) : Promise.resolve({} as AISignalResponse),
@@ -178,16 +181,32 @@ export async function generateReminder(
         ]);
 
         const riskLevel = (behavior.risk_score || 0.5) > 0.7 ? 'High' : (behavior.risk_score || 0.5) > 0.4 ? 'Medium' : 'Low';
+        riskScore = behavior.risk_score || 0.5;  // CHANGED: Store in variable
         const bestTime = timing.best_hour !== undefined ? `${timing.best_hour}:00` : '09:00';
+        industry = industryRes.industry || 'General';  // CHANGED: Store in variable
+
+        // --- NEW: STAGE 1.5 - Fetch Proven Phrases from Past Successes ---
+        const phraseSuggestions = await fetchAIService<{ suggestions: Array<{ text: string; type: string }>; source: string }>(
+            '/api/suggest-phrases',
+            { industry, escalation_level: escalationLevel, risk_score: riskScore }
+        );
+
+        if (phraseSuggestions.suggestions && phraseSuggestions.suggestions.length > 0) {
+            provenPhrasesContent = `\n\nPROVEN PHRASES (from successful past reminders):\n`;
+            phraseSuggestions.suggestions.forEach((phrase, idx) => {
+                provenPhrasesContent += `${idx + 1}. "${phrase.text}" (${phrase.type})\n`;
+            });
+            provenPhrasesContent += `\nConsider incorporating these proven phrases naturally into your message.`;
+        }
 
         mlSignalsContent = `
 ML SIGNALS (Structured Context):
-- Predicted Risk: ${riskLevel} (${Math.round((behavior.risk_score || 0.5) * 100)}% late probability)
+- Predicted Risk: ${riskLevel} (${Math.round(riskScore * 100)}% late probability)
 - Best Time: ${bestTime} WAT
 - Best Channel: ${timing.best_channel || 'Email'}
-- Inferred Industry: ${industryRes.industry || 'General'}
+- Inferred Industry: ${industry}
 - Predicted Delay: ${behavior.predicted_days_overdue || 'N/A'} days
-`;
+${provenPhrasesContent}`;
     } catch (e) {
         console.warn('ML enrichment failed, fallback to standard LLM prompt');
     }
@@ -273,6 +292,25 @@ Respond in JSON format:
         const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
             const parsed = JSON.parse(jsonMatch[0]) as AIReminderResponse;
+
+            // --- NEW: Log this reminder for future learning ---
+            try {
+                await fetchAIService('/api/log-reminder', {
+                    invoice_id: invoice.id,
+                    client_id: client ? client.id : 'unknown',
+                    message: parsed.message,
+                    subject: parsed.subject,
+                    escalation_level: escalationLevel,
+                    risk_score: riskScore,
+                    industry: industry,
+                    amount: invoice.amount,
+                    currency: invoice.currency
+                });
+            } catch (logError) {
+                console.warn('Failed to log reminder for learning:', logError);
+                // Don't fail the whole operation if logging fails
+            }
+
             return parsed;
         }
 

@@ -24,7 +24,7 @@ export async function GET(request: Request) {
         const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         const { data: invoices, error } = await supabase
             .from('invoices')
-            .select('*')
+            .select('client_id, amount, currency, due_date, paid_at, status, description, reminder_count, updated_at, id, created_at')
             .eq('payment_status', 'paid')
             .gte('updated_at', yesterday);
 
@@ -38,8 +38,9 @@ export async function GET(request: Request) {
             invoice_id: inv.id,
             client_id: hashClientId(inv.client_id), // CRITICAL: Privacy
             invoice_amount: inv.amount,
+            currency: inv.currency,  // NEW
             payment_status: 'paid',
-            reminder_count: inv.reminder_count || 0,
+            reminder_count: inv.reminder_count || 0,  // NEW
             days_to_due: Math.floor((new Date(inv.due_date).getTime() - new Date(inv.created_at).getTime()) / (1000 * 3600 * 24)),
             paid_at: inv.updated_at,
         }));
