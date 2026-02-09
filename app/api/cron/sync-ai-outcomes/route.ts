@@ -24,7 +24,7 @@ export async function GET(request: Request) {
         const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
         const { data: invoices, error } = await supabase
             .from('invoices')
-            .select('client_id, amount, currency, due_date, paid_at, status, description, reminder_count, updated_at, id, created_at')
+            .select('user_id, client_id, amount, currency, due_date, paid_at, status, description, reminder_count, updated_at, id, created_at')
             .eq('payment_status', 'paid')
             .gte('updated_at', yesterday);
 
@@ -35,12 +35,13 @@ export async function GET(request: Request) {
 
         // 4. Anonymize and map data to Railway schema
         const payload = invoices.map((inv) => ({
+            user_id: inv.user_id,  // Needed for Stage 2 relative amount percentiles
             invoice_id: inv.id,
             client_id: hashClientId(inv.client_id), // CRITICAL: Privacy
             invoice_amount: inv.amount,
-            currency: inv.currency,  // NEW
+            currency: inv.currency,
             payment_status: 'paid',
-            reminder_count: inv.reminder_count || 0,  // NEW
+            reminder_count: inv.reminder_count || 0,
             days_to_due: Math.floor((new Date(inv.due_date).getTime() - new Date(inv.created_at).getTime()) / (1000 * 3600 * 24)),
             paid_at: inv.updated_at,
         }));

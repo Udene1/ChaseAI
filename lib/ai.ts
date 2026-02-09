@@ -41,9 +41,20 @@ async function fetchAIService<T>(endpoint: string, body?: any): Promise<T> {
 }
 
 // Helper methods for signals
-export async function predictBehavior(clientId: string, amount: number): Promise<AISignalResponse> {
+export async function predictBehavior(
+    clientId: string,
+    amount: number,
+    options?: { currency?: string; due_date?: string; user_id?: string; reminder_count?: number }
+): Promise<AISignalResponse> {
     const hashedId = hashClientId(clientId);
-    return fetchAIService<AISignalResponse>('/api/predict-behavior', { client_id: hashedId, amount });
+    return fetchAIService<AISignalResponse>('/api/predict-behavior', {
+        client_id: hashedId,
+        amount,
+        currency: options?.currency || 'NGN',
+        due_date: options?.due_date || new Date().toISOString(),
+        user_id: options?.user_id,
+        reminder_count: options?.reminder_count || 0
+    });
 }
 
 export async function optimizeTiming(clientId: string): Promise<AISignalResponse> {
@@ -175,7 +186,12 @@ export async function generateReminder(
     let industry = 'General';        // NEW: Track industry for logging
     try {
         const [behavior, timing, industryRes] = await Promise.all([
-            client ? predictBehavior(client.id, invoice.amount) : Promise.resolve({} as AISignalResponse),
+            client ? predictBehavior(client.id, invoice.amount, {
+                currency: invoice.currency as string,
+                due_date: invoice.due_date,
+                user_id: invoice.user_id,
+                reminder_count: (invoice as any).reminder_count || 0
+            }) : Promise.resolve({} as AISignalResponse),
             client ? optimizeTiming(client.id) : Promise.resolve({} as AISignalResponse),
             invoice.description ? extractIndustry(invoice.description) : Promise.resolve({ industry: 'General' }),
         ]);
