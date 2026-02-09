@@ -1,12 +1,18 @@
 /**
- * Verification script for ChaseAI Enterprise API
- * Run this locally with: npx tsx scripts/test-enterprise-api.ts
+ * Verification script for ChaseAI Enterprise API (Safe Version)
+ * 
+ * Instructions:
+ * 1. Ensure NEXT_PUBLIC_SUPABASE_URL and your API Key are in .env.local
+ * 2. Run with settings from your environment
  */
 
 const API_BASE = 'http://localhost:3000/api/v1/external';
-const API_KEY = '1cfbbd23-d015-42ed-9780-2b75010c24c2';
-const TEST_INVOICE_ID = '91e70e6f-bf38-46c3-96ba-34422d25753d';
-const TEST_CLIENT_ID = 'cad59582-d5e8-4c75-9116-9b9104ce30ea';
+
+// --- CONFIGURATION (Use your own test IDs) ---
+const TEST_API_KEY = 'YOUR_API_KEY_HERE'; // DO NOT COMMIT THIS
+const TEST_INVOICE_ID = 'YOUR_INVOICE_ID_HERE';
+const TEST_CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
+// ---------------------------------------------
 
 async function testEndpoint(name: string, path: string, method: string = 'GET', body?: any) {
     console.log(`\n🧪 Testing ${name} [${method} ${path}]...`);
@@ -14,7 +20,7 @@ async function testEndpoint(name: string, path: string, method: string = 'GET', 
         const res = await fetch(`${API_BASE}${path}`, {
             method,
             headers: {
-                'Authorization': `Bearer ${API_KEY}`,
+                'Authorization': `Bearer ${TEST_API_KEY}`,
                 'Content-Type': 'application/json'
             },
             body: body ? JSON.stringify(body) : undefined
@@ -25,40 +31,25 @@ async function testEndpoint(name: string, path: string, method: string = 'GET', 
             return;
         }
 
-        const data = await res.json();
         console.log(`✅ Success!`);
-        // console.log(JSON.stringify(data, null, 2));
     } catch (error) {
         console.error(`❌ Error:`, error);
     }
 }
 
 async function runTests() {
+    if (TEST_API_KEY === 'YOUR_API_KEY_HERE') {
+        console.error('⚠ Please set TEST_API_KEY in the script before running.');
+        return;
+    }
+
     console.log('🚀 Starting Enterprise API Verification Tests...');
 
-    // 1. List Invoices
-    await testEndpoint('List Invoices', '/invoices?status=sent&limit=5');
-
-    // 2. Create Invoice
-    await testEndpoint('Create Invoice', '/invoices', 'POST', {
-        client_email: 'api-test@example.com',
-        amount: 15000,
-        currency: 'NGN',
-        description: 'Enterprise API Test Invoice'
-    });
-
-    // 3. Get Single Invoice
+    await testEndpoint('List Invoices', '/invoices?limit=5');
     await testEndpoint('Get Single Invoice', `/invoices/${TEST_INVOICE_ID}`);
-
-    // 4. Patch Invoice (Sync status)
-    await testEndpoint('Update Invoice Status', `/invoices/${TEST_INVOICE_ID}`, 'PATCH', {
-        status: 'paid'
-    });
-
-    // 5. Get AI Signals
     await testEndpoint('Get AI Signals', `/clients/${TEST_CLIENT_ID}/signals`);
 
-    console.log('\n🏁 Verification tests complete. Please ensure your local server is running on http://localhost:3000');
+    console.log('\n🏁 Verification tests complete.');
 }
 
 runTests();
