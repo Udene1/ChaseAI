@@ -3,6 +3,64 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { InvoiceInsert, ClientInsert } from '@/types';
 
 // Rate limiting and security checks
+export async function GET(request: Request) {
+    try {
+        const authHeader = request.headers.get('authorization');
+        if (!authHeader?.startsWith('Bearer ')) {
+            return NextResponse.json({ error: 'Unauthorized: Missing or invalid Bearer token' }, { status: 401 });
+        }
+
+        const apiKey = authHeader.split(' ')[1];
+        const supabase = createAdminClient();
+
+        // 1. Authenticate user by API Key
+        const { data: user, error: authError } = await (supabase
+            .from('users') as any)
+            .select('id')
+            .eq('api_key', apiKey)
+            .single();
+
+        if (authError || !user) {
+            return NextResponse.json({ error: 'Unauthorized: Invalid API Key' }, { status: 401 });
+        }
+
+        // 2. Parse Query Params
+        const { searchParams } = new URL(request.url);
+        const status = searchParams.get('status');
+        const limit = Math.min(Number(searchParams.get('limit')) || 20, 100);
+        const offset = Number(searchParams.get('offset')) || 0;
+
+        // 3. Fetch Invoices
+        let query = (supabase.from('invoices') as any)
+            .select('*, client:clients(id, name, email)')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+
+        if (status) {
+            query = query.eq('status', status);
+        }
+
+        const { data: invoices, error: invError, count } = await query;
+
+        if (invError) throw invError;
+
+        return NextResponse.json({
+            success: true,
+            data: invoices,
+            pagination: {
+                limit,
+                offset,
+                total: count ?? undefined
+            }
+        });
+
+    } catch (error) {
+        console.error('Public GET API crash:', error);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    }
+}
+
 export async function POST(request: Request) {
     try {
         const authHeader = request.headers.get('authorization');
