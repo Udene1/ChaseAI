@@ -267,7 +267,7 @@ response = requests.post(url, json=payload, headers=headers)`,
                                 <CardContent>
                                     <p className="text-sm text-gray-600 mb-4">Use this to mark invoices as **paid** in ChaseAI when they are paid in your external system.</p>
                                     <pre className="p-3 bg-gray-50 rounded-lg text-xs font-mono border border-gray-100">
-                                        &#123; "status": "paid" &#125;
+                                        &123; &quot;status&quot;: &quot;paid&quot; &125;
                                     </pre>
                                 </CardContent>
                             </Card>
@@ -287,7 +287,7 @@ response = requests.post(url, json=payload, headers=headers)`,
                                             </CardTitle>
                                         </div>
                                     </div>
-                                    <CardDescription>Export ChaseAI's unique risk scores and payment behavior insights.</CardDescription>
+                                    <CardDescription>Export ChaseAI&apos;s unique risk scores and payment behavior insights.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <p className="text-sm text-gray-600">Integrate these insights into your own CRM or dashboard to highlight high-risk clients before they default.</p>
