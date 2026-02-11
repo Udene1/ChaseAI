@@ -9,6 +9,25 @@ const nextConfig = {
             },
         ],
     },
+    async redirects() {
+        return [
+            {
+                source: '/doc/api',
+                destination: '/docs/api',
+                permanent: true,
+            },
+            {
+                source: '/doc/API',
+                destination: '/docs/api',
+                permanent: true,
+            },
+            {
+                source: '/api-docs',
+                destination: '/docs/api',
+                permanent: true,
+            },
+        ]
+    },
 };
 
 module.exports = nextConfig;
