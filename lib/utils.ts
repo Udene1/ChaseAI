@@ -197,18 +197,3 @@ export function getStatusColor(status: string): string {
     };
     return colors[status] || colors.draft;
 }
-/**
- * Hash client ID for anonymization
- */
-export function hashClientId(id: string): string {
-    // Basic SHA-256 hashing using the SubtleCrypto API (available in Edge runtimes)
-    // Or simple pseudo-hash for non-crypto secure contexts if needed.
-    // We'll use a simple deterministic hash for now.
-    let hash = 0;
-    for (let i = 0; i < id.length; i++) {
-        const char = id.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash).toString(16);
-}
