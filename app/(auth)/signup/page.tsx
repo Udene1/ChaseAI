@@ -109,11 +109,39 @@ function SignupContent() {
                         </div>
                         <span className="text-2xl font-bold gradient-text">ChaseAI</span>
                     </Link>
+
+                    {/* Pending Invoice Banner */}
+                    <div id="pending-invoice-banner" className="hidden mt-6 bg-primary-50 border border-primary-100 rounded-xl p-4 text-left animate-in fade-in slide-in-from-top-4">
+                        <p className="text-sm font-semibold text-primary-900 mb-1">
+                            Invoice for <span id="pending-amount" className="font-bold"></span> ready to send.
+                        </p>
+                        <p className="text-xs text-primary-600">
+                            Create your account to save and send this invoice immediately.
+                        </p>
+                    </div>
+
                     <h1 className="mt-6 text-3xl font-bold text-dark-900">Create your account</h1>
                     <p className="mt-2 text-gray-600">
                         Start automating your invoice reminders today
                     </p>
                 </div>
+
+                <script dangerouslySetInnerHTML={{
+                    __html: `
+                        try {
+                            const pending = sessionStorage.getItem('pendingInvoice');
+                            if (pending) {
+                                const data = JSON.parse(pending);
+                                const banner = document.getElementById('pending-invoice-banner');
+                                const amountSpan = document.getElementById('pending-amount');
+                                if (banner && amountSpan && data.amount) {
+                                    banner.classList.remove('hidden');
+                                    amountSpan.textContent = data.currency + ' ' + data.amount;
+                                }
+                            }
+                        } catch (e) {}
+                    `
+                }} />
 
                 {/* Form Card */}
                 <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">

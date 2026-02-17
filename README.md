@@ -3,6 +3,18 @@
 
 An AI-powered invoice reminder SaaS for freelancers and small businesses. Automate late payment reminders with intelligent, personalized messages that get you paid faster.
 
+## AI & Reminder Architecture (Hybrid LLM + ML Microservice)
+
+ChaseAI employs a **Hybrid Intelligent System** to maximize collection rates for freelancers.
+
+### How it Works:
+1.  **Structured Predictions**: A specialized Python ML microservice analyzes historical payment data to predict risk scores and optimal reminder timing.
+2.  **Enriched Prompts**: These ML signals are injected into our LLM prompts (Groq/OpenAI).
+3.  **Natural Generation**: The LLM uses this data to write highly personalized, data-aware reminder messages.
+4.  **Learning Loop**: As invoices are paid, the main app pushes anonymized outcomes back to the ML service, allowing the models to retrain and improve over time.
+
+For more details, see [ARCHITECTURE.md](./ARCHITECTURE.md).
+
 ![ChaseAI Dashboard](./docs/dashboard-preview.png)
 
 ## Features

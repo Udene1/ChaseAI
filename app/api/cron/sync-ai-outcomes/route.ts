@@ -1,4 +1,3 @@
-// app/api/cron/sync-ai-outcomes/route.ts
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { hashClientId } from '@/lib/utils';
@@ -72,4 +71,8 @@ export async function GET(request: Request) {
         console.error('Sync failed:', err);
         return NextResponse.json({ error: 'Sync failed' }, { status: 500 });
     }
+}
+
+export async function POST(request: Request) {
+    return GET(request);
 }

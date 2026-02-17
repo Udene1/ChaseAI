@@ -65,6 +65,7 @@ export async function optimizeTiming(clientId: string): Promise<AISignalResponse
 export async function extractIndustry(description: string): Promise<{ industry: string }> {
     return fetchAIService<{ industry: string }>('/api/extract-industry', { description });
 }
+// ------------------------------------
 
 /**
  * Get AI client based on provider preference
@@ -184,6 +185,7 @@ export async function generateReminder(
     let provenPhrasesContent = '';  // NEW: Store proven phrases
     let riskScore = 0.5;             // NEW: Track risk score for logging
     let industry = 'General';        // NEW: Track industry for logging
+
     try {
         const [behavior, timing, industryRes] = await Promise.all([
             client ? predictBehavior(client.id, invoice.amount, {
@@ -248,13 +250,13 @@ OBJECTIVE: ${context.action}
 Generate a reminder with:
 1. A compelling subject line (max 60 chars)
 2. A personalized message body (2-3 paragraphs, professional)
-3. If client has late payment history, subtly reference wanting to maintain a good relationship
+3. If client has late payment history or high risk, subtly reference wanting to maintain a good relationship
 4. For level 3, mention potential late fees or next steps
 
 Respond in JSON format:
 {
   "subject": "Subject line here",
-  "message": "Full email body here",
+  "message": "Full message body here",
   "tone": "${context.tone.split(' ')[0]}",
   "suggestedAction": "Optional suggestion for sender (e.g., 'Consider offering 5% discount for immediate payment')"
 }`;
@@ -355,46 +357,46 @@ function getFallbackReminder(
         1: {
             subject: `Friendly Reminder: Invoice ${invoice.invoice_number} Due`,
             message: `Dear ${clientName},
-
+ 
 I hope this message finds you well. This is a friendly reminder that invoice ${invoice.invoice_number} for ${amount} was due on ${dueDate}.
-
+ 
 If you've already sent payment, please disregard this message. Otherwise, I would appreciate it if you could process the payment at your earliest convenience.
-
+ 
 Please let me know if you have any questions or need any clarification regarding the invoice.
-
+ 
 Best regards`,
             tone: 'polite',
         },
         2: {
             subject: `Important: Invoice ${invoice.invoice_number} Payment Overdue`,
             message: `Dear ${clientName},
-
+ 
 I'm following up regarding invoice ${invoice.invoice_number} for ${amount}, which was due on ${dueDate}. As of today, we have not yet received payment.
-
+ 
 Timely payments help us maintain our service quality and continue our professional relationship. I kindly request that you prioritize this payment or reach out if there are any issues we should discuss.
-
+ 
 Please process the payment within the next 7 days to avoid any service impacts.
-
+ 
 Thank you for your attention to this matter.
-
+ 
 Best regards`,
             tone: 'firm',
         },
         3: {
             subject: `URGENT: Final Notice for Invoice ${invoice.invoice_number}`,
             message: `Dear ${clientName},
-
+ 
 This is a final notice regarding invoice ${invoice.invoice_number} for ${amount}, which has been overdue since ${dueDate}.
-
+ 
 Despite our previous reminders, we have not received payment. Please note that continued non-payment may result in:
 - Late fees being applied to your account
 - Suspension of services
 - Referral to a collection agency
-
+ 
 To avoid these consequences, please process the payment immediately or contact us to discuss a payment arrangement.
-
+ 
 This matter requires your urgent attention.
-
+ 
 Regards`,
             tone: 'urgent',
             suggestedAction: 'Consider calling the client directly if no response within 48 hours',
