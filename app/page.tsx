@@ -44,7 +44,7 @@ export default function LandingPage() {
                             Get your first invoice <span className="text-primary-600">paid today.</span>
                         </h1>
                         <p className="text-xl text-gray-500 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-                            Create professional invoices in seconds. ChaseAI automatically follows up with clients so you don't have to.
+                            Create professional invoices in seconds. ChaseAI automatically follows up with clients so you don&apos;t have to.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-sm text-gray-400 font-medium">
