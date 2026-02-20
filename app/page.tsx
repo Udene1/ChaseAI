@@ -4,12 +4,11 @@ import { headers } from 'next/headers';
 import { Mail, CheckCircle2 } from 'lucide-react';
 import { QuickInvoice } from '@/components/invoice/quick-invoice';
 import PricingSection from '@/components/pricing/PricingSection';
-import { getRegionByCountry, getCountryName } from '@/lib/geo';
+import { getRegionByCountry } from '@/lib/geo';
 
 export default function LandingPage() {
     const countryCode = headers().get('x-vercel-ip-country') || 'US';
     const region = getRegionByCountry(countryCode);
-    const countryName = getCountryName(countryCode);
 
     return (
         <div className="min-h-screen bg-white selection:bg-primary-100 selection:text-primary-900 flex flex-col">
@@ -93,7 +92,6 @@ export default function LandingPage() {
             {/* Pricing Section */}
             <PricingSection
                 detectedRegion={region}
-                countryName={countryName}
             />
 
             {/* Simple Footer */}
