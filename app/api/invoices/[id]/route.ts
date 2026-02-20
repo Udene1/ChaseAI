@@ -49,14 +49,24 @@ export async function PUT(
         }
 
         const body = await request.json();
-        const { status, amount, dueDate, description } = body;
+        const {
+            status,
+            amount,
+            currency,
+            dueDate,
+            description,
+            clientName,
+            clientEmail,
+            clientPhone,
+            pdfUrl
+        } = body;
 
         const supabase = createClient();
 
-        // Verify ownership
+        // Verify ownership and get current client_id
         const { data: existingInvoice } = await (supabase
             .from('invoices') as any)
-            .select('id, status')
+            .select('id, status, client_id')
             .eq('id', params.id)
             .eq('user_id', user.id)
             .single();
@@ -65,15 +75,58 @@ export async function PUT(
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
         }
 
+        let clientId = existingInvoice.client_id;
+
+        // Handle client updates if provided
+        if (clientEmail || clientName) {
+            const { data: existingClient } = await supabase
+                .from('clients')
+                .select('id, email')
+                .eq('user_id', user.id)
+                .eq('email', clientEmail || '')
+                .single();
+
+            if (existingClient) {
+                clientId = existingClient.id;
+                // Update client details if it's the same or another existing client
+                await (supabase.from('clients') as any)
+                    .update({
+                        name: clientName,
+                        phone: clientPhone || null,
+                        whatsapp_enabled: !!clientPhone,
+                    })
+                    .eq('id', clientId);
+            } else if (clientEmail) {
+                // Create new client if it's a new email
+                const { data: newClient } = await (supabase.from('clients') as any)
+                    .insert({
+                        user_id: user.id,
+                        name: clientName,
+                        email: clientEmail,
+                        phone: clientPhone || null,
+                        whatsapp_enabled: !!clientPhone,
+                    })
+                    .select('id')
+                    .single();
+
+                if (newClient) {
+                    clientId = (newClient as any).id;
+                }
+            }
+        }
+
         // Build update object
         const updateData: Record<string, unknown> = {
             updated_at: new Date().toISOString(),
+            client_id: clientId,
         };
 
         if (status) updateData.status = status;
         if (amount !== undefined) updateData.amount = parseFloat(amount);
+        if (currency) updateData.currency = currency;
         if (dueDate) updateData.due_date = dueDate;
         if (description !== undefined) updateData.description = description;
+        if (pdfUrl) updateData.pdf_url = pdfUrl;
 
         const { data, error } = await (supabase
             .from('invoices') as any)
@@ -89,40 +142,32 @@ export async function PUT(
 
         // If status changed to 'sent' from 'draft', schedule reminders
         if (status === 'sent' && existingInvoice.status === 'draft') {
-            const { data: invoice } = await (supabase
-                .from('invoices') as any)
-                .select('due_date')
-                .eq('id', params.id)
-                .single();
+            const dueDateObj = new Date(updateData.due_date as string || (data as any).due_date);
 
-            if (invoice) {
-                const dueDateObj = new Date((invoice as any).due_date);
-
-                // Schedule reminders
-                await (supabase.from('reminders') as any).insert([
-                    {
-                        invoice_id: params.id,
-                        type: 'email',
-                        escalation_level: 1,
-                        scheduled_date: dueDateObj.toISOString(),
-                        status: 'pending',
-                    },
-                    {
-                        invoice_id: params.id,
-                        type: 'email',
-                        escalation_level: 2,
-                        scheduled_date: new Date(dueDateObj.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-                        status: 'pending',
-                    },
-                    {
-                        invoice_id: params.id,
-                        type: 'email',
-                        escalation_level: 3,
-                        scheduled_date: new Date(dueDateObj.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-                        status: 'pending',
-                    },
-                ]);
-            }
+            // Schedule reminders
+            await (supabase.from('reminders') as any).insert([
+                {
+                    invoice_id: params.id,
+                    type: 'email',
+                    escalation_level: 1,
+                    scheduled_date: dueDateObj.toISOString(),
+                    status: 'pending',
+                },
+                {
+                    invoice_id: params.id,
+                    type: 'email',
+                    escalation_level: 2,
+                    scheduled_date: new Date(dueDateObj.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                    status: 'pending',
+                },
+                {
+                    invoice_id: params.id,
+                    type: 'email',
+                    escalation_level: 3,
+                    scheduled_date: new Date(dueDateObj.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+                    status: 'pending',
+                },
+            ]);
         }
 
         // If marked as paid, cancel pending reminders
