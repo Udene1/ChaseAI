@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const origin = requestUrl.origin;
 
     if (code) {
-        const supabase = createClient();
+        const supabase = createClient() as any;
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (!error) {
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
                     .from('users')
                     .select('*')
                     .eq('id', user.id)
-                    .maybeSingle() as { data: any | null };
+                    .maybeSingle();
 
                 const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
                 let shouldSendWelcome = false;
