@@ -20,9 +20,9 @@ export async function GET(request: Request) {
             if (user) {
                 const { data: profile } = await supabase
                     .from('users')
-                    .select('id, welcome_sent')
+                    .select('*')
                     .eq('id', user.id)
-                    .single();
+                    .maybeSingle();
 
                 const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
                 let shouldSendWelcome = false;
