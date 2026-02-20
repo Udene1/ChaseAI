@@ -1,21 +1,35 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { headers } from 'next/headers';
 import { Mail, CheckCircle2 } from 'lucide-react';
 import { QuickInvoice } from '@/components/invoice/quick-invoice';
+import PricingSection from '@/components/pricing/PricingSection';
+import { getRegionByCountry, getCountryName } from '@/lib/geo';
 
 export default function LandingPage() {
+    const countryCode = headers().get('x-vercel-ip-country') || 'US';
+    const region = getRegionByCountry(countryCode);
+    const countryName = getCountryName(countryCode);
+
     return (
         <div className="min-h-screen bg-white selection:bg-primary-100 selection:text-primary-900 flex flex-col">
             {/* Header */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-primary-500/20">
-                            C
-                        </div>
+                        <Image
+                            src="/logo.png"
+                            alt="ChaseAI Logo"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8 rounded-lg shadow-lg shadow-primary-500/10"
+                        />
                         <span className="text-xl font-bold text-dark-900">ChaseAI</span>
                     </Link>
                     <nav className="flex items-center gap-6 font-medium text-sm">
+                        <Link href="#pricing" className="text-gray-500 hover:text-primary-600 transition-colors">
+                            Pricing
+                        </Link>
                         <Link href="/login" className="text-gray-500 hover:text-primary-600 transition-colors">
                             Sign In
                         </Link>
@@ -75,6 +89,12 @@ export default function LandingPage() {
                     </div>
                 </div>
             </main>
+
+            {/* Pricing Section */}
+            <PricingSection
+                detectedRegion={region}
+                countryName={countryName}
+            />
 
             {/* Simple Footer */}
             <footer className="py-8 px-6 border-t border-gray-50">

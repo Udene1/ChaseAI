@@ -20,37 +20,47 @@ export async function GET(request: Request) {
             if (user) {
                 const { data: profile } = await supabase
                     .from('users')
-                    .select('id')
+                    .select('id, welcome_sent')
                     .eq('id', user.id)
                     .single();
 
-                if (!profile) {
-                    const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
-                    const marketingOptIn = user.user_metadata?.marketing_opt_in === true;
+                const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
+                let shouldSendWelcome = false;
 
-                    // Create user profile
+                if (!profile) {
+                    // Fallback: Create user profile if trigger failed
                     const { error: insertError } = await supabase.from('users').insert({
                         id: user.id,
                         email: user.email!,
                         full_name: fullName,
-                        marketing_opt_in: marketingOptIn,
+                        marketing_opt_in: user.user_metadata?.marketing_opt_in === true,
+                        welcome_sent: true, // Mark as sent since we'll do it now
                     } as any);
 
                     if (!insertError) {
-                        // Send welcome email
-                        try {
-                            const welcomeTemplate = getWelcomeEmail(fullName);
-                            await sendEmail({
-                                to: user.email!,
-                                subject: welcomeTemplate.subject,
-                                html: welcomeTemplate.html,
-                                text: welcomeTemplate.text,
-                            });
-                        } catch (emailError) {
-                            console.error('Error sending welcome email:', emailError);
-                        }
+                        shouldSendWelcome = true;
                     } else {
-                        console.error('Error creating user profile:', insertError);
+                        console.error('Error creating user profile fallback:', insertError);
+                        return NextResponse.redirect(`${origin}/login?message=Database error saving new user`);
+                    }
+                } else if (!profile.welcome_sent) {
+                    // Profile exists (likely from trigger) but welcome email not yet sent
+                    shouldSendWelcome = true;
+                    // Mark as sent in DB first to avoid race conditions/double sends
+                    await supabase.from('users').update({ welcome_sent: true }).eq('id', user.id);
+                }
+
+                if (shouldSendWelcome) {
+                    try {
+                        const welcomeTemplate = getWelcomeEmail(fullName);
+                        await sendEmail({
+                            to: user.email!,
+                            subject: welcomeTemplate.subject,
+                            html: welcomeTemplate.html,
+                            text: welcomeTemplate.text,
+                        });
+                    } catch (emailError) {
+                        console.error('Error sending welcome email:', emailError);
                     }
                 }
             }

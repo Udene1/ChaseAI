@@ -19,10 +19,19 @@ CREATE TABLE IF NOT EXISTS public.users (
   paystack_customer_code TEXT,
   paystack_subscription_code TEXT,
   default_currency TEXT DEFAULT 'NGN',
+  marketing_opt_in BOOLEAN DEFAULT false,
+  welcome_sent BOOLEAN DEFAULT false,
+  api_key TEXT UNIQUE,
+  api_key_created_at TIMESTAMPTZ DEFAULT NOW(),
+  api_key_last_used TIMESTAMPTZ,
+  credits_balance INTEGER DEFAULT 0,
   settings JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Index for fast API key lookups
+CREATE INDEX IF NOT EXISTS idx_users_api_key ON public.users(api_key);
 
 -- ============================================
 -- CLIENTS TABLE
@@ -58,6 +67,8 @@ CREATE TABLE IF NOT EXISTS public.invoices (
   status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'sent', 'overdue', 'paid', 'cancelled')),
   pdf_url TEXT,
   stripe_payment_intent_id TEXT,
+  paystack_payment_url TEXT,
+  paystack_reference TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -66,6 +77,7 @@ CREATE TABLE IF NOT EXISTS public.invoices (
 CREATE INDEX IF NOT EXISTS idx_invoices_user_id ON public.invoices(user_id);
 CREATE INDEX IF NOT EXISTS idx_invoices_status ON public.invoices(user_id, status);
 CREATE INDEX IF NOT EXISTS idx_invoices_due_date ON public.invoices(due_date);
+CREATE INDEX IF NOT EXISTS idx_invoices_paystack_reference ON public.invoices(paystack_reference);
 
 -- ============================================
 -- REMINDERS TABLE
@@ -88,6 +100,25 @@ CREATE INDEX IF NOT EXISTS idx_reminders_invoice_id ON public.reminders(invoice_
 CREATE INDEX IF NOT EXISTS idx_reminders_status ON public.reminders(status, scheduled_date);
 
 -- ============================================
+-- NOTIFICATIONS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.notifications (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  message TEXT NOT NULL,
+  type TEXT DEFAULT 'info' CHECK (type IN ('info', 'success', 'warning', 'error')),
+  is_read BOOLEAN DEFAULT false,
+  link TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for notifications
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON public.notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON public.notifications(user_id, is_read);
+
+-- ============================================
 -- ROW LEVEL SECURITY (RLS)
 -- ============================================
 
@@ -96,6 +127,7 @@ ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reminders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
 -- Users policies
 CREATE POLICY "Users can view own profile" ON public.users
@@ -154,16 +186,15 @@ CREATE POLICY "Users can delete reminders for own invoices" ON public.reminders
     invoice_id IN (SELECT id FROM public.invoices WHERE user_id = auth.uid())
   );
 
--- ============================================
--- STORAGE BUCKET FOR INVOICE PDFs
--- ============================================
--- Run this in the Supabase Dashboard > Storage
+-- Notifications policies
+CREATE POLICY "Users can view own notifications" ON public.notifications
+  FOR SELECT USING (auth.uid() = user_id);
 
--- Create bucket (can't be done via SQL, use Dashboard)
--- Name: invoices
--- Public: false
--- File size limit: 10MB
--- Allowed MIME types: application/pdf
+CREATE POLICY "Users can update own notifications" ON public.notifications
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own notifications" ON public.notifications
+  FOR DELETE USING (auth.uid() = user_id);
 
 -- ============================================
 -- TRIGGERS FOR UPDATED_AT
@@ -188,17 +219,22 @@ CREATE TRIGGER update_invoices_updated_at
   BEFORE UPDATE ON public.invoices
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_notifications_updated_at
+  BEFORE UPDATE ON public.notifications
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================
 -- FUNCTION TO AUTO-CREATE USER PROFILE
 -- ============================================
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, full_name)
+  INSERT INTO public.users (id, email, full_name, marketing_opt_in)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name')
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
+    COALESCE((NEW.raw_user_meta_data->>'marketing_opt_in')::boolean, false)
   );
   RETURN NEW;
 END;
@@ -206,38 +242,6 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger to auto-create user profile on signup
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
--- ============================================
--- NOTIFICATIONS TABLE
--- ============================================
-CREATE TABLE IF NOT EXISTS public.notifications (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  message TEXT NOT NULL,
-  type TEXT DEFAULT 'info' CHECK (type IN ('info', 'success', 'warning', 'error')),
-  is_read BOOLEAN DEFAULT false,
-  link TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Indexes for notifications
-CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON public.notifications(user_id);
-CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON public.notifications(user_id, is_read);
-
--- Notifications policies
-ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view own notifications" ON public.notifications
-  FOR SELECT USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own notifications" ON public.notifications
-  FOR UPDATE USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can delete own notifications" ON public.notifications
-  FOR DELETE USING (auth.uid() = user_id);
-
--- Updated_at trigger for notifications
-CREATE TRIGGER update_notifications_updated_at
-  BEFORE UPDATE ON public.notifications
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
