@@ -9,8 +9,6 @@ export default function PricingPage() {
     // Default to 'US' if header is missing
     const countryCode = headers().get('x-vercel-ip-country') || 'US';
     const region = getRegionByCountry(countryCode);
-    const countryName = getCountryName(countryCode);
-
     return (
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center">
@@ -19,7 +17,6 @@ export default function PricingPage() {
         }>
             <PricingContent
                 detectedRegion={region}
-                countryName={countryName}
             />
         </Suspense>
     );

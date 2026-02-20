@@ -7,10 +7,9 @@ import PricingSection from './PricingSection';
 
 interface PricingContentProps {
     detectedRegion: PricingRegion;
-    countryName: string;
 }
 
-export default function PricingContent({ detectedRegion, countryName }: PricingContentProps) {
+export default function PricingContent({ detectedRegion }: PricingContentProps) {
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
             <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
@@ -31,7 +30,6 @@ export default function PricingContent({ detectedRegion, countryName }: PricingC
             <div className="pt-20">
                 <PricingSection
                     detectedRegion={detectedRegion}
-                    countryName={countryName}
                 />
             </div>
         </div>

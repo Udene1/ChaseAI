@@ -10,11 +10,10 @@ import { PricingRegion } from '@/lib/geo';
 
 interface PricingSectionProps {
     detectedRegion: PricingRegion;
-    countryName: string;
     showTitle?: boolean;
 }
 
-export default function PricingSection({ detectedRegion, countryName, showTitle = true }: PricingSectionProps) {
+export default function PricingSection({ detectedRegion, showTitle = true }: PricingSectionProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState<string | null>(null);
 
@@ -65,7 +64,7 @@ export default function PricingSection({ detectedRegion, countryName, showTitle 
             features: [
                 'Unlimited invoices',
                 'AI Email Chasing',
-                'Paystack Integration',
+                'Payment Integration',
                 'Basic Analytics',
                 'Email Support'
             ]
@@ -79,7 +78,7 @@ export default function PricingSection({ detectedRegion, countryName, showTitle 
             lifetimeKey: 'usa_lifetime',
             isGlobal: true,
             features: [
-                'Everything in Local',
+                'Unlimited invoices',
                 'Priority Support',
                 'Global Currencies',
                 'AI Historical Context',
@@ -96,8 +95,7 @@ export default function PricingSection({ detectedRegion, countryName, showTitle 
             isPPP: true,
             features: [
                 'Everything in Global',
-                'PPP Adjusted Rate',
-                'Regional Support',
+                'Global Support',
                 'Custom AI Tone',
                 'Team Collaboration'
             ]
@@ -109,22 +107,13 @@ export default function PricingSection({ detectedRegion, countryName, showTitle 
     return (
         <section id="pricing" className="py-20 px-6">
             <div className="max-w-7xl mx-auto text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-50 text-primary-700 rounded-full text-xs font-bold mb-6 border border-primary-100">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
-                    </span>
-                    Detected Location: {countryName}
-                </div>
+
 
                 {showTitle && (
                     <>
                         <h2 className="text-4xl md:text-5xl font-bold text-dark-900 mb-4 text-balance">
-                            Fair Regional Pricing
+                            Simple, Transparent Pricing
                         </h2>
-                        <p className="text-xl text-gray-600 mb-16 max-w-2xl mx-auto">
-                            We use Purchasing Power Parity to ensure ChaseAI is accessible to businesses everywhere.
-                        </p>
                     </>
                 )}
 
@@ -135,8 +124,7 @@ export default function PricingSection({ detectedRegion, countryName, showTitle 
                         </div>
 
                         <div className="text-center mb-8">
-                            <h3 className="text-2xl font-bold text-dark-900">{displayRegion.name}</h3>
-                            {displayRegion.isPPP && <p className="text-xs text-primary-600 font-bold mt-1 uppercase tracking-wider">PPP Adjusted</p>}
+                            <h3 className="text-2xl font-bold text-dark-900">ChaseAI Pro</h3>
                         </div>
 
                         <div className="space-y-6 flex-grow">
