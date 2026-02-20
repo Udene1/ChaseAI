@@ -79,15 +79,15 @@ export async function PUT(
 
         // Handle client updates if provided
         if (clientEmail || clientName) {
-            const { data: existingClient } = await supabase
-                .from('clients')
+            const { data: existingClient } = await (supabase
+                .from('clients') as any)
                 .select('id, email')
                 .eq('user_id', user.id)
                 .eq('email', clientEmail || '')
-                .single();
+                .maybeSingle();
 
             if (existingClient) {
-                clientId = existingClient.id;
+                clientId = (existingClient as any).id;
                 // Update client details if it's the same or another existing client
                 await (supabase.from('clients') as any)
                     .update({
