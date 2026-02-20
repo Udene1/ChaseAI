@@ -28,7 +28,9 @@ export interface Database {
                     api_key_last_used: string | null;
                     credits_balance: number;
                     marketing_opt_in: boolean;
+                    welcome_sent: boolean;
                     created_at: string;
+                    updated_at: string;
                 };
                 Insert: {
                     id: string;
@@ -46,7 +48,9 @@ export interface Database {
                     api_key_last_used?: string | null;
                     credits_balance?: number;
                     marketing_opt_in?: boolean;
+                    welcome_sent?: boolean;
                     created_at?: string;
+                    updated_at?: string;
                 };
                 Update: {
                     id?: string;
@@ -64,7 +68,9 @@ export interface Database {
                     api_key_last_used?: string | null;
                     credits_balance?: number;
                     marketing_opt_in?: boolean;
+                    welcome_sent?: boolean;
                     created_at?: string;
+                    updated_at?: string;
                 };
             };
             clients: {
@@ -129,6 +135,8 @@ export interface Database {
                     status?: 'draft' | 'sent' | 'overdue' | 'paid';
                     pdf_url?: string | null;
                     stripe_payment_intent_id?: string | null;
+                    paystack_payment_url?: string | null;
+                    paystack_reference?: string | null;
                     created_at?: string;
                     updated_at?: string;
                 };
@@ -144,6 +152,8 @@ export interface Database {
                     status?: 'draft' | 'sent' | 'overdue' | 'paid';
                     pdf_url?: string | null;
                     stripe_payment_intent_id?: string | null;
+                    paystack_payment_url?: string | null;
+                    paystack_reference?: string | null;
                     created_at?: string;
                     updated_at?: string;
                 };
