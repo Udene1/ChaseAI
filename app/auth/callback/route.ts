@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
                 if (!profile) {
                     // Fallback: Create user profile if trigger failed
-                    const { error: insertError } = await supabase.from('users').insert({
+                    const { error: insertError } = await (supabase.from('users') as any).insert({
                         id: user.id,
                         email: user.email!,
                         full_name: fullName,
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
                     // Profile exists (likely from trigger) but welcome email not yet sent
                     shouldSendWelcome = true;
                     // Mark as sent in DB first to avoid race conditions/double sends
-                    await supabase.from('users').update({ welcome_sent: true }).eq('id', user.id);
+                    await (supabase.from('users') as any).update({ welcome_sent: true }).eq('id', user.id);
                 }
 
                 if (shouldSendWelcome) {
