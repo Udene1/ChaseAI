@@ -86,14 +86,14 @@ export function AILogicDemo() {
                                 <div className="space-y-2">
                                     <p className="text-primary-400 text-sm">{'>'} ANALYZING RISK...</p>
                                     <p className="text-gray-300 text-xs">Score: 0.82 (High Probability of Late Payment)</p>
-                                    <p className="text-gray-400 text-xs italic">Decision: Shift tone to FIRM & DIRECT</p>
+                                    <p className="text-gray-400 text-xs italic">Decision: Shift tone to FIRM &amp; DIRECT</p>
                                 </div>
                             )}
                             {activeStep === 1 && (
                                 <div className="space-y-2">
                                     <p className="text-blue-400 text-sm">{'>'} DETECTED INDUSTRY: CREATIVE AGENCY</p>
                                     <p className="text-gray-300 text-xs">Applying peer-based success patterns...</p>
-                                    <p className="text-gray-400 text-xs italic">Decision: Use "Project Continuity" reasoning</p>
+                                    <p className="text-gray-400 text-xs italic">Decision: Use &quot;Project Continuity&quot; reasoning</p>
                                 </div>
                             )}
                             {activeStep === 2 && (
@@ -108,7 +108,7 @@ export function AILogicDemo() {
                                     <p className="text-emerald-400 text-sm">{'>'} FINALIZING REMINDER...</p>
                                     <div className="bg-gray-800/50 p-4 rounded-xl border border-white/5">
                                         <p className="text-white text-xs leading-relaxed">
-                                            "Hi Sarah, let's keep the project momentum going! Just a quick nudge on..."
+                                            &quot;Hi Sarah, let&apos;s keep the project momentum going! Just a quick nudge on...&quot;
                                         </p>
                                     </div>
                                     <p className="text-primary-500 text-[10px] font-bold uppercase tracking-tighter">SUCCESS: 31% INCREASE IN PAY SPEED</p>
