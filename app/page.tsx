@@ -7,11 +7,11 @@ import { motion } from 'framer-motion';
 import { QuickInvoice } from '@/components/invoice/quick-invoice';
 import { AILogicDemo } from '@/components/landing/ai-logic-demo';
 import PricingSection from '@/components/pricing/PricingSection';
-import { getRegionByCountry } from '@/lib/geo';
+import { PricingRegion } from '@/lib/geo';
 
 export default function LandingPage() {
     // In a real app we'd get this from headers, but for the client component we'll default
-    const region = 'NG'; 
+    const region: PricingRegion = 'nigeria'; 
 
     const containerVariants = {
         hidden: { opacity: 0 },
