@@ -56,9 +56,23 @@
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
   }
 
+  .premium-glass {
+    @apply bg-white/40 backdrop-blur-2xl border border-white/40 shadow-2xl;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+  }
+
   .glass-card-dark {
     @apply bg-dark-800/80 backdrop-blur-2xl border border-white/10;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  }
+
+  /* Premium Gradients */
+  .bg-premium-mesh {
+    background-color: #ffffff;
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(161, 71%, 91%, 1) 0, transparent 50%), 
+      radial-gradient(at 50% 0%, hsla(187, 85%, 93%, 1) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(220, 85%, 93%, 1) 0, transparent 50%);
   }
 
   /* Gradient text */

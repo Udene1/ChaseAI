@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { getUser, getUserProfile } from '@/lib/supabase/server';
-import { generateReminder } from '@/lib/ai';
+import { generateReminder, optimizeTiming } from '@/lib/ai';
 import { getEmailTemplate, getSMSTemplate, getWhatsAppTemplate } from '@/lib/templates';
 import { sendEmail } from '@/lib/email';
 import { sendSMS, sendWhatsApp } from '@/lib/sms';
@@ -24,10 +24,12 @@ export async function POST(
             type = 'email',
             escalationLevel = 1,
             customMessage,
+            smartSchedule = false, // NEW: Capture smart schedule flag
         } = body as {
             type?: ReminderType;
             escalationLevel?: EscalationLevel;
             customMessage?: string;
+            smartSchedule?: boolean;
         };
 
         const supabase = createClient();
@@ -47,8 +49,8 @@ export async function POST(
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
         }
 
+        // Get client for signals
         const client = (invoice as any).client as Client | null;
-
         if (!client) {
             return NextResponse.json({ error: 'No client associated with invoice' }, { status: 400 });
         }
@@ -57,19 +59,50 @@ export async function POST(
         const profile = await getUserProfile();
         const settings = (profile?.settings || {}) as UserSettings;
 
+        // --- NEW: HANDLE SMART SCHEDULING ---
+        let scheduledDate: string | null = null;
+        if (smartSchedule) {
+            try {
+                const timing = await optimizeTiming(client.id);
+                if (timing.best_hour !== undefined) {
+                    // Schedule for the best hour today or tomorrow
+                    const now = new Date();
+                    const scheduled = new Date();
+                    scheduled.setHours(timing.best_hour, 0, 0, 0);
+                    
+                    if (scheduled <= now) {
+                        scheduled.setDate(scheduled.getDate() + 1);
+                    }
+                    scheduledDate = scheduled.toISOString();
+                }
+            } catch (e) {
+                console.warn('Smart scheduling failed, falling back to immediate send');
+            }
+        }
+
         // Create reminder record
         const { data: reminder, error: reminderError } = await (supabase.from('reminders') as any)
             .insert({
                 invoice_id: params.id,
                 type,
                 escalation_level: escalationLevel,
-                status: 'pending',
+                status: smartSchedule && scheduledDate ? 'pending' : 'pending',
+                scheduled_date: scheduledDate || new Date().toISOString(),
             })
             .select('id')
             .single();
 
         if (reminderError || !reminder) {
             return NextResponse.json({ error: 'Failed to create reminder record' }, { status: 500 });
+        }
+
+        // If smart scheduling was successful, we stop here
+        if (smartSchedule && scheduledDate) {
+            return NextResponse.json({
+                success: true,
+                message: 'Reminder scheduled for optimal time',
+                data: { reminderId: reminder.id, scheduledAt: scheduledDate },
+            });
         }
 
         let sendResult: { success: boolean; error?: string };

@@ -84,8 +84,10 @@ export interface DashboardStats {
 export interface AIReminderResponse {
     subject: string;
     message: string;
-    tone: 'polite' | 'firm' | 'urgent';
+    tone: string;
     suggestedAction?: string;
+    toneReasoning?: string;
+    riskScore?: number;
 }
 
 // Report data types

@@ -182,9 +182,9 @@ export async function generateReminder(
 
     // --- ENRICHMENT: Fetch ML Signals from Microservice ---
     let mlSignalsContent = '';
-    let provenPhrasesContent = '';  // NEW: Store proven phrases
-    let riskScore = 0.5;             // NEW: Track risk score for logging
-    let industry = 'General';        // NEW: Track industry for logging
+    let provenPhrasesContent = '';
+    let riskScore = 0.5;
+    let industry = 'General';
 
     try {
         const [behavior, timing, industryRes] = await Promise.all([
@@ -199,11 +199,11 @@ export async function generateReminder(
         ]);
 
         const riskLevel = (behavior.risk_score || 0.5) > 0.7 ? 'High' : (behavior.risk_score || 0.5) > 0.4 ? 'Medium' : 'Low';
-        riskScore = behavior.risk_score || 0.5;  // CHANGED: Store in variable
+        riskScore = behavior.risk_score || 0.5;
         const bestTime = timing.best_hour !== undefined ? `${timing.best_hour}:00` : '09:00';
-        industry = industryRes.industry || 'General';  // CHANGED: Store in variable
+        industry = industryRes.industry || 'General';
 
-        // --- NEW: STAGE 1.5 - Fetch Proven Phrases from Past Successes ---
+        // --- FETCH PROVEN PHRASES ---
         const phraseSuggestions = await fetchAIService<{ suggestions: Array<{ text: string; type: string }>; source: string }>(
             '/api/suggest-phrases',
             { industry, escalation_level: escalationLevel, risk_score: riskScore }
@@ -258,7 +258,8 @@ Respond in JSON format:
   "subject": "Subject line here",
   "message": "Full message body here",
   "tone": "${context.tone.split(' ')[0]}",
-  "suggestedAction": "Optional suggestion for sender (e.g., 'Consider offering 5% discount for immediate payment')"
+  "suggestedAction": "Optional suggestion for sender",
+  "toneReasoning": "Provide a brief explanation (1 sentence) of why you chose this specific tone/phrasing based on the ML signals provided. Reference risk or industry if applicable."
 }`;
 
     try {
@@ -310,6 +311,7 @@ Respond in JSON format:
         const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
             const parsed = JSON.parse(jsonMatch[0]) as AIReminderResponse;
+            parsed.riskScore = riskScore; // NEW: Pass through for UI
 
             // --- NEW: Log this reminder for future learning ---
             try {
